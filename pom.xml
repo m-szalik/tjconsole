@@ -78,4 +78,11 @@
         	</plugin>
         </plugins>
   </build>
+  
+  <scm>
+	<url>svn://jsoftware.org/grucha/tjconsole/trunk</url>
+	<connection>scm:svn:svn://jsoftware.org/grucha/tjconsole/trunk</connection>
+	<developerConnection>scm:svn:svn://jsoftware.org/grucha/tjconsole/trunk</developerConnection>
+  </scm>
+  
 </project>
