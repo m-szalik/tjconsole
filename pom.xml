@@ -31,6 +31,12 @@
             <url>http://jline.sourceforge.net/m2repo</url>
         </repository>
   </repositories>  
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  
   <build>
   		<plugins>
   		    <plugin>
