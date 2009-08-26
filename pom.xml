@@ -32,11 +32,6 @@
         </repository>
   </repositories>  
   
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
-  
   <build>
   		<plugins>
   		    <plugin>
@@ -66,7 +61,7 @@
         		<artifactId>maven-assembly-plugin</artifactId>
         		<configuration>
         			<descriptors>
-        				<descriptor>${basedir}/src/main/assembly/z.xml</descriptor>
+        				<descriptor>${basedir}/src/main/assembly/all.xml</descriptor>
         			</descriptors>
           			<archive>
             			<manifest>
