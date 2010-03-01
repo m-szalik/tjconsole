@@ -26,7 +26,7 @@ public class SetAttributeCommand extends AbstractAttributeCommand {
 	@Override
 	protected void actionEvn(String input, String attribute) throws Exception {
 		Object oldV = ctx.getEnviroment().get(attribute);
-		Object newV = ConvertUtils.convert(getValue(input), oldV.getClass());
+		Object newV = ConvertUtils.convert((String)getValue(input, "string"), oldV.getClass());
 		ctx.setEvniromentVariable(attribute, newV);
 		output.append("SET " + attribute + " TO " + newV).append('\n');
 	}
@@ -46,13 +46,13 @@ public class SetAttributeCommand extends AbstractAttributeCommand {
 			throw new IllegalArgumentException("Attributes " + attributes);
 		}
 		MBeanAttributeInfo attributeInfo = attributes.get(0);
-		Object value = getValue(input);
+		Object value = getValue(input, attributeInfo.getType().toLowerCase());
 		Attribute attribute = new Attribute(attributeInfo.getName(), value);
 		ctx.getServer().setAttribute(ctx.getObjectName(), attribute);
 		output.append("SET " + attributeInfo.getName() + " TO " + value).append('\n');
 	}
 	
-	private String getValue(String input) {
+	private Object getValue(String input, String type) {
 		input = input.substring(getPrefix().length());
 		while(input.startsWith(" ")) input = input.substring(1);
 		int eqin = input.indexOf('=');
@@ -62,7 +62,16 @@ public class SetAttributeCommand extends AbstractAttributeCommand {
 		}
 		int ind = input.indexOf(' ');
 		if (ind < 0) throw new IllegalArgumentException("Value is missing!");
-		input = input.substring(ind+1);
+		input = input.substring(ind+1).trim();
+		if ("boolean".equals(type)) {
+			return Boolean.valueOf(input);
+		}
+		if ("long".equals(type)) {
+			return Long.valueOf(input);
+		}
+		if ("int".equals(type)) {
+			return Integer.valueOf(input);
+		}
 		return input;
 	}
 
