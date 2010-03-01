@@ -37,6 +37,7 @@ public class BeanCommand extends AbstractCommand implements Completor {
 				output.append("Bean " + bname + " not found.");
 				ctx.setObjectName(null);
 			}
+			output.append('\n');
 		}
 	}
 

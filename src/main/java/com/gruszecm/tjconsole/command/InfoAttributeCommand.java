@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.management.MBeanAttributeInfo;
 
+import com.gruszecm.tjconsole.DataOutputService;
 import com.gruszecm.tjconsole.TJContext;
 
 public class InfoAttributeCommand extends AbstractAttributeCommand {
@@ -36,7 +37,18 @@ public class InfoAttributeCommand extends AbstractAttributeCommand {
 		for(MBeanAttributeInfo ai : attributes) {
 			output.append('\t').append(ai.getName()).append("::");
 			output.append(ai.getType());
-			if (ai.isWritable()) output.append("  WR");
+			if (ai.isWritable() && ai.isReadable()) output.append("  WR");
+			else {
+				if (ai.isReadable()) output.append("  RO");
+				else if (ai.isWritable()) output.append("  WO");
+				else output.append("  --");
+			}
+			if (ai.isReadable()) {
+				output.append("  (");
+				Object value = ctx.getServer().getAttribute(ctx.getObjectName(), ai.getName());
+				DataOutputService.get(ai.getType()).output(value, output);
+				output.append(')');
+			}
 			output.append('\n');
 		}
 	}
