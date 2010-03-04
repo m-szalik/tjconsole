@@ -3,7 +3,7 @@
   <groupId>com.gruszecm</groupId>
   <artifactId>tjconsole</artifactId>
   <packaging>jar</packaging>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <name>tjconsole</name>
   <url>http://tjconsole.jsoftware.org</url>
   
@@ -82,9 +82,9 @@
   </build>
   
   <scm>
-	<url>svn://jsoftware.org/grucha/tjconsole/tags/tjconsole-1.0</url>
-	<connection>scm:svn:svn://jsoftware.org/grucha/tjconsole/tags/tjconsole-1.0</connection>
-	<developerConnection>scm:svn:svn://jsoftware.org/grucha/tjconsole/tags/tjconsole-1.0</developerConnection>
+	<url>svn://jsoftware.org/grucha/tjconsole/tags/tjconsole-1.1</url>
+	<connection>scm:svn:svn://jsoftware.org/grucha/tjconsole/tags/tjconsole-1.1</connection>
+	<developerConnection>scm:svn:svn://jsoftware.org/grucha/tjconsole/tags/tjconsole-1.1</developerConnection>
   </scm>
   
 </project>
