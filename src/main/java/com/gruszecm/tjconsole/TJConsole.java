@@ -1,4 +1,7 @@
 package com.gruszecm.tjconsole;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -11,7 +14,14 @@ import java.util.prefs.BackingStoreException;
 import jline.Completor;
 import jline.ConsoleReader;
 
-import com.gruszecm.tjconsole.TJContext;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import com.gruszecm.tjconsole.command.AbstractCommand;
 import com.gruszecm.tjconsole.command.BeanCommand;
 import com.gruszecm.tjconsole.command.ConnectCommand;
@@ -82,7 +92,8 @@ public class TJConsole {
 	}
 
 
-	private void processCommand(String line) {
+	private boolean processCommand(String line) {
+		boolean r = false;
 		AbstractCommand command = null;
 		for(AbstractCommand ac : commands) {
 			if (ac.matches(line)) {
@@ -97,6 +108,7 @@ public class TJConsole {
 		} else {
 			try {
 				command.action(line);
+				r = true;
 			} catch (Exception e) {
 				System.err.println("Command " + line + "error: " + e.getMessage());
 				e.printStackTrace();
@@ -104,20 +116,66 @@ public class TJConsole {
 		}
 //		output.append('\n');
 		output.flush();
+		return r;
 	}
 	
+	@SuppressWarnings("static-access")
 	public static void main(String[] args) throws Exception {
 		Properties props = new Properties();
 		props.load(TJConsole.class.getResourceAsStream("/tjconsole.properties"));
-		System.err.println(props.getProperty("message.welcome","Welcome to tjconsole"));
 		com.gruszecm.tjconsole.TJConsole console = new com.gruszecm.tjconsole.TJConsole();
 		console.propmptPattern = props.getProperty("propmpt.pattern", "> ");
+		Options options = new Options();
+		options.addOption(OptionBuilder.withDescription("This help message.").create('h'));
+		options.addOption(OptionBuilder.withDescription("Connect to mBean server.").hasArgs(1).create('c'));
+		options.addOption(OptionBuilder.withDescription("Run script from file.").withArgName("file").hasArgs(1).create('f'));
+		
 		if (args.length > 0) {
-			new ConnectCommand(console.context, console.output).action("\\c " + args[0]);
+			CommandLineParser parser = new GnuParser();
+			CommandLine cli = null;
+		    try {
+		        cli = parser.parse( options, args );
+		    }
+		    catch( ParseException exp ) {
+		        System.err.println( "Parsing failed.  Reason: " + exp.getMessage());
+		        printHelp(options, System.err);
+		    }
+		    if (cli.hasOption('h')) {
+		    	printHelp(options, System.out);
+		    	System.exit(0);
+		    }
+		    if (cli.hasOption('c')) {
+		    	String cliArg = cli.getOptionValue('c');
+		    	new ConnectCommand(console.context, console.output).action("\\c " + cliArg);
+		    }
+		    if (cli.hasOption('f')) {
+		    	String cliArg = cli.getOptionValue('f');
+		    	BufferedReader fileReader = new BufferedReader(new FileReader(new File(cliArg)));
+		    	String s;
+		    	while ((s = fileReader.readLine()) != null) {
+		    		s = s.trim();
+		    		if (s.startsWith("#") || s.length() == 0) continue;
+		    		if (! console.processCommand(s))  {
+		    			System.exit(1);
+		    		}
+		    	}
+		    	System.exit(0);
+		    }
 		}
+		
+		System.err.println(props.getProperty("message.welcome","Welcome to tjconsole"));
 		console.read();
 		System.out.println("Quit.");
-		
 	}
+
+
+	private static void printHelp(Options options, PrintStream outStream) {
+		PrintWriter out = new PrintWriter(outStream);
+		HelpFormatter helpFormatter = new HelpFormatter();
+		helpFormatter.printHelp(out, 80, "ant", "TJConsole", options, 3, 2, "", false);
+		out.flush();
+	}
+
+
 
 }
