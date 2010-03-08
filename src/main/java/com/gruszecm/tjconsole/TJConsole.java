@@ -126,9 +126,10 @@ public class TJConsole {
 		com.gruszecm.tjconsole.TJConsole console = new com.gruszecm.tjconsole.TJConsole();
 		console.propmptPattern = props.getProperty("propmpt.pattern", "> ");
 		Options options = new Options();
-		options.addOption(OptionBuilder.withDescription("This help message.").create('h'));
-		options.addOption(OptionBuilder.withDescription("Connect to mBean server.").hasArgs(1).create('c'));
+		options.addOption(OptionBuilder.withDescription("Display this help and exit.").create('h'));
+		options.addOption(OptionBuilder.withDescription("Connect to mBean server. (example -c LOCAL:<PID> ==> -c LOCAL:2060").hasArgs(1).create('c'));
 		options.addOption(OptionBuilder.withDescription("Run script from file.").withArgName("file").hasArgs(1).create('f'));
+		options.addOption(OptionBuilder.withDescription("Show local java processes and exit.").create('p'));
 		
 		if (args.length > 0) {
 			CommandLineParser parser = new GnuParser();
@@ -158,6 +159,13 @@ public class TJConsole {
 		    		if (! console.processCommand(s))  {
 		    			System.exit(1);
 		    		}
+		    	}
+		    	System.exit(0);
+		    }
+		    if (cli.hasOption('p')) {
+		    	ProcessListManager processListManager = new ProcessListManager();
+		    	for(String ps : processListManager.getLocalProcesses()) {
+		    		System.out.println(ps);
 		    	}
 		    	System.exit(0);
 		    }
