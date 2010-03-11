@@ -36,18 +36,18 @@ import com.gruszecm.tjconsole.command.SetAttributeCommand;
 public class TJConsole {
 	private TJContext context;
 	private ConsoleReader reader;
-	private PrintStream output;
+	private Output output;
 	private boolean quit = false;
 	private List<AbstractCommand> commands;
 	
 	private HelpCommand helpCommand;
 	private String propmptPattern;
 	
-	public TJConsole() throws IOException, BackingStoreException {
+	public TJConsole(Output out) throws IOException, BackingStoreException {
 		context = new TJContext();
 		reader = new ConsoleReader ();
 		reader.setDebug (new PrintWriter (new FileWriter ("writer.debug", true)));
-		output = System.out;
+		output = out;
 		commands = new ArrayList<AbstractCommand>();
 		
 		helpCommand = new HelpCommand(context, output);
@@ -87,8 +87,7 @@ public class TJConsole {
 	private void printPropmpt() {
 		String prompt = propmptPattern;
 		prompt = prompt.replace("%b", context.getObjectName() == null ? "#NONE#" : context.getObjectName().toString());
-		output.print(prompt);
-		output.flush();
+		output.outPrompt(prompt);
 	}
 
 
@@ -103,19 +102,16 @@ public class TJConsole {
 		}
 		if (command == null) {
 			if (line != null && line.trim().length() > 0) {
-				output.append("Command not found!");
+				output.outError("Command not found!\n");
 			}
 		} else {
 			try {
 				command.action(line);
 				r = true;
 			} catch (Exception e) {
-				System.err.println("Command " + line + "error: " + e.getMessage());
-				e.printStackTrace();
+				output.outError("Command " + line + "error: " + e.getMessage()+"\n");
 			}
 		}
-//		output.append('\n');
-		output.flush();
 		return r;
 	}
 	
@@ -123,14 +119,17 @@ public class TJConsole {
 	public static void main(String[] args) throws Exception {
 		Properties props = new Properties();
 		props.load(TJConsole.class.getResourceAsStream("/tjconsole.properties"));
-		com.gruszecm.tjconsole.TJConsole console = new com.gruszecm.tjconsole.TJConsole();
-		console.propmptPattern = props.getProperty("propmpt.pattern", "> ");
 		Options options = new Options();
 		options.addOption(OptionBuilder.withDescription("Display this help and exit.").create('h'));
+		options.addOption(OptionBuilder.withDescription("Quiet - do not display info messages.").create('q'));
 		options.addOption(OptionBuilder.withDescription("Connect to mBean server. (example -c LOCAL:<PID> ==> -c LOCAL:2060").hasArgs(1).create('c'));
 		options.addOption(OptionBuilder.withDescription("Connect to bean.").withArgName("beanName").hasArgs(1).create('b'));
 		options.addOption(OptionBuilder.withDescription("Run script from file.").withArgName("file").hasArgs(1).create('f'));
 		options.addOption(OptionBuilder.withDescription("Show local java processes and exit.").create('p'));
+		
+		Output consoleOutput = new Output();
+		com.gruszecm.tjconsole.TJConsole console = new com.gruszecm.tjconsole.TJConsole(consoleOutput);
+		console.propmptPattern = props.getProperty("propmpt.pattern", "> ");
 		
 		if (args.length > 0) {
 			CommandLineParser parser = new GnuParser();
@@ -141,6 +140,9 @@ public class TJConsole {
 		    catch( ParseException exp ) {
 		        System.err.println( "Parsing failed.  Reason: " + exp.getMessage());
 		        printHelp(options, System.err);
+		    }
+		    if (cli.hasOption('q')) {
+		    	consoleOutput.setDisplayInfo(false);
 		    }
 		    if (cli.hasOption('h')) {
 		    	printHelp(options, System.out);

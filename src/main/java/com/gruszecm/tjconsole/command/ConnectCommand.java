@@ -1,6 +1,5 @@
 package com.gruszecm.tjconsole.command;
 
-import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,7 @@ import javax.management.remote.JMXServiceURL;
 
 import jline.Completor;
 
+import com.gruszecm.tjconsole.Output;
 import com.gruszecm.tjconsole.ProcessListManager;
 import com.gruszecm.tjconsole.TJContext;
 
@@ -25,7 +25,7 @@ public class ConnectCommand extends AbstractCommand implements Completor {
 	private Preferences prefs;
 	private ProcessListManager processListManager = new ProcessListManager();
 	
-	public ConnectCommand(TJContext context, PrintStream output) throws BackingStoreException {
+	public ConnectCommand(TJContext context, Output output) throws BackingStoreException {
 		super(context, output);
 		remoteConnectionHistory = new ArrayList<String>();
 		prefs = Preferences.userNodeForPackage(getClass());
@@ -54,15 +54,14 @@ public class ConnectCommand extends AbstractCommand implements Completor {
 		String url = extractURL(input);
 		if (url.length() == 0) {
 			if (ctx.getServer() == null) {
-				output.append("Not connected.");
+				output.outInfo("Not connected.");
 			} else {
-				output.append("Connected to " + ctx.getServer().getDefaultDomain());
+				output.outInfo("Connected to " + ctx.getServer().getDefaultDomain());
 			}
-			output.append('\n');
 			return;
 		}
 		boolean remote = false;
-		output.append("Connecting to " + url + "....\n");
+		output.outInfo("Connecting to " + url + "....\n");
 		MBeanServerConnection serverConnection;
 		if (url.equalsIgnoreCase("local")) {
 			serverConnection = ManagementFactory.getPlatformMBeanServer();
@@ -82,7 +81,7 @@ public class ConnectCommand extends AbstractCommand implements Completor {
 			serverConnection = connector.getMBeanServerConnection();
 		}
 		if (serverConnection != null) {
-			output.append("Connected to " + url + " - " + serverConnection.getDefaultDomain() + "\n");
+			output.outInfo("Connected to " + url + " - " + serverConnection.getDefaultDomain());
 			ctx.setServer(serverConnection);
 			if (remote) {
 				addRemote(url, true);

@@ -1,7 +1,6 @@
 package com.gruszecm.tjconsole;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,13 +25,13 @@ public abstract class DataOutputService {
 		return dos;
 	}
 	
-	public abstract void output(Object data, PrintStream output) throws IOException;	
+	public abstract void output(Object data, Appendable output) throws IOException;	
 }
 
 
 class ToStringDataOutputService extends DataOutputService {
 	@Override
-	public void output(Object data, PrintStream output) throws IOException {
+	public void output(Object data, Appendable output) throws IOException {
 		if (data == null) output.append("null"); else output.append(data.toString());
 	}
 
@@ -41,7 +40,7 @@ class ToStringDataOutputService extends DataOutputService {
 class CompositeDataOutputService extends DataOutputService {
 
 	@Override
-	public void output(Object data, PrintStream output) throws IOException {
+	public void output(Object data, Appendable output) throws IOException {
 		CompositeDataSupport cds = (CompositeDataSupport) data;
 		output.append("CompositeData:").append(cds.getCompositeType().getTypeName()).append("{\n");
 		for(Object o : cds.values()) {
@@ -55,13 +54,13 @@ class CompositeDataOutputService extends DataOutputService {
 class VoidDataOutputService extends DataOutputService {
 
 	@Override
-	public void output(Object data, PrintStream output) throws IOException {	}	
+	public void output(Object data, Appendable output) throws IOException {	}	
 }
 
 class ArrayDataOutputService extends DataOutputService {
 
 	@Override
-	public void output(Object data, PrintStream output) throws IOException {
+	public void output(Object data, Appendable output) throws IOException {
 		Object array = data;
 		output.append("Array[\n");
 		for(int i=0; i<Array.getLength(array); i++) {

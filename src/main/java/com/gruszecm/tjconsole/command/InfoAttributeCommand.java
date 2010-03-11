@@ -1,6 +1,5 @@
 package com.gruszecm.tjconsole.command;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -8,11 +7,12 @@ import java.util.List;
 import javax.management.MBeanAttributeInfo;
 
 import com.gruszecm.tjconsole.DataOutputService;
+import com.gruszecm.tjconsole.Output;
 import com.gruszecm.tjconsole.TJContext;
 
 public class InfoAttributeCommand extends AbstractAttributeCommand {
 
-	public InfoAttributeCommand(TJContext context, PrintStream output) {
+	public InfoAttributeCommand(TJContext context, Output output) {
 		super(context, output);
 	}
 
@@ -23,7 +23,9 @@ public class InfoAttributeCommand extends AbstractAttributeCommand {
 
 	@Override
 	protected void actionEvn(String input, String attribute) throws Exception {
-		output.append("Envioment variable - ").append(attribute).append('\n');
+		StringBuilder sb = new StringBuilder();
+		sb.append("Envioment variable - ").append(attribute).append('\n');
+		output.outMBeanOutput(sb.toString());
 	}
 	
 	@Override
@@ -34,22 +36,24 @@ public class InfoAttributeCommand extends AbstractAttributeCommand {
 				if (! it.next().getName().startsWith(att)) it.remove();
 			}
 		}
+		StringBuilder sb = new StringBuilder(); 
 		for(MBeanAttributeInfo ai : attributes) {
-			output.append('\t').append(ai.getName()).append("::");
-			output.append(ai.getType());
-			if (ai.isWritable() && ai.isReadable()) output.append("  WR");
+			sb.append('\t').append(ai.getName()).append("::");
+			sb.append(ai.getType());
+			if (ai.isWritable() && ai.isReadable()) sb.append("  WR");
 			else {
-				if (ai.isReadable()) output.append("  RO");
-				else if (ai.isWritable()) output.append("  WO");
-				else output.append("  --");
+				if (ai.isReadable()) sb.append("  RO");
+				else if (ai.isWritable()) sb.append("  WO");
+				else sb.append("  --");
 			}
 			if (ai.isReadable()) {
-				output.append("  (");
+				sb.append("  (");
 				Object value = ctx.getServer().getAttribute(ctx.getObjectName(), ai.getName());
-				DataOutputService.get(ai.getType()).output(value, output);
-				output.append(')');
+				DataOutputService.get(ai.getType()).output(value, sb);
+				sb.append(')');
 			}
-			output.append('\n');
+			sb.append('\n');
+			output.outMBeanOutput(sb.toString());
 		}
 	}
 	

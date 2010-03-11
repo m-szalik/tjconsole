@@ -1,7 +1,6 @@
 package com.gruszecm.tjconsole.command;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,34 +9,36 @@ import javax.management.ObjectName;
 
 import jline.Completor;
 
+import com.gruszecm.tjconsole.Output;
 import com.gruszecm.tjconsole.TJContext;
 
 public class BeanCommand extends AbstractCommand implements Completor {
 	private static final String PREFIX = "\\b";
 	
 	
-	public BeanCommand(TJContext ctx, PrintStream output) {
+	public BeanCommand(TJContext ctx, Output output) {
 		super(ctx, output);
 	}
 	
 	@Override
 	public void action(String input)	throws Exception {
+		StringBuilder sb = new StringBuilder();
 		String bname = extractURL(input);
 		if (bname.length() == 0) {
 			for(String bn : names()) {
-				output.append("\t* ").append(bn).append('\n');
+				sb.append("\t* ").append(bn).append('\n');
+				output.outInfo(sb.toString());
 			}
 		} else {
-			output.append("Connecting to bean " + bname + "....\n");
+			output.outInfo("Connecting to bean " + bname + "...");
 			ObjectName objectName = new ObjectName(bname);
 			if (ctx.getServer().isRegistered(objectName)) {
-				output.append("Connected to bean " + bname);
+				output.outInfo("Connected to bean " + bname);
 				ctx.setObjectName(objectName);
 			} else {
-				output.append("Bean " + bname + " not found.");
+				output.outError("Bean " + bname + " not found.");
 				ctx.setObjectName(null);
 			}
-			output.append('\n');
 		}
 	}
 

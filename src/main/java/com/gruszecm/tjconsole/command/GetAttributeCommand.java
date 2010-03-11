@@ -1,6 +1,5 @@
 package com.gruszecm.tjconsole.command;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -8,11 +7,12 @@ import java.util.List;
 import javax.management.MBeanAttributeInfo;
 
 import com.gruszecm.tjconsole.DataOutputService;
+import com.gruszecm.tjconsole.Output;
 import com.gruszecm.tjconsole.TJContext;
 
 public class GetAttributeCommand extends AbstractAttributeCommand {
 
-	public GetAttributeCommand(TJContext context, PrintStream output) {
+	public GetAttributeCommand(TJContext context, Output output) {
 		super(context, output);
 	}
 
@@ -29,21 +29,23 @@ public class GetAttributeCommand extends AbstractAttributeCommand {
 				if (! it.next().getName().startsWith(att)) it.remove();
 			}
 		}
+		StringBuilder sb = new StringBuilder();
 		for(MBeanAttributeInfo ai : attributes) {
-			output.append(ai.getName()).append(" = ");
+			sb.append(ai.getName()).append(" = ");
 			Object value = ctx.getServer().getAttribute(ctx.getObjectName(), ai.getName());
-			DataOutputService.get(ai.getType()).output(value, output);
-			output.append('\n');
-			output.flush();
+			DataOutputService.get(ai.getType()).output(value, sb);
+			sb.append('\n');
 		}
+		output.outMBeanOutput(sb.toString());
 	}
 	
 	@Override
 	protected void actionEvn(String input, String attribute) throws Exception {
-		output.append(attribute).append(" = ");
-		output.append(ctx.getEnviroment().get(attribute).toString());
-		output.append('\n');
-		output.flush();
+		StringBuilder sb = new StringBuilder();
+		sb.append(attribute).append(" = ");
+		sb.append(ctx.getEnviroment().get(attribute).toString());
+		sb.append('\n');
+		output.outMBeanOutput(sb.toString());
 	}
 	
 	@Override

@@ -1,18 +1,18 @@
 package com.gruszecm.tjconsole.command;
 
-import java.io.PrintStream;
 import java.util.List;
 
 import javax.management.MBeanAttributeInfo;
 
 import jline.Completor;
 
+import com.gruszecm.tjconsole.Output;
 import com.gruszecm.tjconsole.TJContext;
 
 public abstract class AbstractAttributeCommand extends AbstractCommand implements Completor {
 	private final String PREFIX = getPrefix().toUpperCase();
 
-	public AbstractAttributeCommand(TJContext context, PrintStream output) {
+	public AbstractAttributeCommand(TJContext context, Output output) {
 		super(context, output);
 	}
 

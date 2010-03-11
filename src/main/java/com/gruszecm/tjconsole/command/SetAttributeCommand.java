@@ -1,6 +1,5 @@
 package com.gruszecm.tjconsole.command;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,11 +9,12 @@ import javax.management.MBeanAttributeInfo;
 
 import org.apache.commons.beanutils.ConvertUtils;
 
+import com.gruszecm.tjconsole.Output;
 import com.gruszecm.tjconsole.TJContext;
 
 public class SetAttributeCommand extends AbstractAttributeCommand {
 
-	public SetAttributeCommand(TJContext context, PrintStream output) {
+	public SetAttributeCommand(TJContext context, Output output) {
 		super(context, output);
 	}
 
@@ -28,7 +28,9 @@ public class SetAttributeCommand extends AbstractAttributeCommand {
 		Object oldV = ctx.getEnviroment().get(attribute);
 		Object newV = ConvertUtils.convert((String)getValue(input, "string"), oldV.getClass());
 		ctx.setEvniromentVariable(attribute, newV);
-		output.append("SET " + attribute + " TO " + newV).append('\n');
+		StringBuilder sb = new StringBuilder();
+		sb.append("SET " + attribute + " TO " + newV);
+		output.outInfo(sb.toString());
 	}
 	
 	@Override
@@ -49,7 +51,9 @@ public class SetAttributeCommand extends AbstractAttributeCommand {
 		Object value = getValue(input, attributeInfo.getType().toLowerCase());
 		Attribute attribute = new Attribute(attributeInfo.getName(), value);
 		ctx.getServer().setAttribute(ctx.getObjectName(), attribute);
-		output.append("SET " + attributeInfo.getName() + " TO " + value).append('\n');
+		StringBuilder sb = new StringBuilder();
+		sb.append("SET " + attributeInfo.getName() + " TO " + value).append('\n');
+		output.outInfo(sb.toString());
 	}
 	
 	private Object getValue(String input, String type) {

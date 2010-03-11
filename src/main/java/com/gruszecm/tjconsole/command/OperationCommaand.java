@@ -1,6 +1,5 @@
 package com.gruszecm.tjconsole.command;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -15,12 +14,13 @@ import jline.Completor;
 import org.apache.commons.beanutils.ConvertUtils;
 
 import com.gruszecm.tjconsole.DataOutputService;
+import com.gruszecm.tjconsole.Output;
 import com.gruszecm.tjconsole.TJContext;
 import com.gruszecm.tjconsole.util.MyDateConverter;
 
 public class OperationCommaand extends AbstractCommand implements Completor {
 	
-	public OperationCommaand(TJContext ctx, PrintStream output) {
+	public OperationCommaand(TJContext ctx, Output output) {
 		super(ctx, output);
 		ConvertUtils.deregister(Date.class);
 		ConvertUtils.register(new MyDateConverter(), Date.class);
@@ -30,14 +30,16 @@ public class OperationCommaand extends AbstractCommand implements Completor {
 	@Override
 	public void action(String input) throws Exception {
 		if (input.trim().equalsIgnoreCase(PREFIX)) {
+			StringBuilder sb = new StringBuilder();
 			for(MBeanOperationInfo oi : operations()) {
-				output.append(oi.getName()).append('(');
+				sb.append(oi.getName()).append('(');
 				for(int i=0; i<oi.getSignature().length; i++) {
-					output.append(oi.getSignature()[i].getType());
-					if (i+1 < oi.getSignature().length) output.append(',');
+					sb.append(oi.getSignature()[i].getType());
+					if (i+1 < oi.getSignature().length) sb.append(',');
 				}
-				output.append(")\n");
+				sb.append(")\n");
 			}
+			output.outMBeanOutput(sb.toString());
 			return;
 		}
 		if (input.startsWith(PREFIX)) {
@@ -61,9 +63,11 @@ public class OperationCommaand extends AbstractCommand implements Completor {
 			params[i] = getParameter(input, i, operation.getSignature()[i]);
 		}
 		Object returnValue = ctx.getServer().invoke(ctx.getObjectName(), operation.getName(), params, signature );
-		output.append("Method result:(" + operation.getReturnType() + ") ");
-		DataOutputService.get(operation.getReturnType()).output(returnValue, output);
-		output.append('\n');
+		StringBuilder sb = new StringBuilder();
+		sb.append("Method result:(" + operation.getReturnType() + ") ");
+		DataOutputService.get(operation.getReturnType()).output(returnValue, sb);
+		sb.append('\n');
+		output.outMBeanOutput(sb.toString());
 	}
 
 	private Object getParameter(String input, int index, MBeanParameterInfo beanParameterInfo) throws ClassNotFoundException {

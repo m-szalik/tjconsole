@@ -1,14 +1,13 @@
 package com.gruszecm.tjconsole.command;
 
-import java.io.PrintStream;
-
+import com.gruszecm.tjconsole.Output;
 import com.gruszecm.tjconsole.TJContext;
 
 public abstract class AbstractCommand {
 	protected TJContext ctx;;
-	protected PrintStream output;
+	protected Output output;
 
-	public AbstractCommand(TJContext ctx, PrintStream output) {
+	public AbstractCommand(TJContext ctx, Output output) {
 		super();
 		this.ctx = ctx;
 		this.output = output;
