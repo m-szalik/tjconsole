@@ -128,6 +128,7 @@ public class TJConsole {
 		Options options = new Options();
 		options.addOption(OptionBuilder.withDescription("Display this help and exit.").create('h'));
 		options.addOption(OptionBuilder.withDescription("Connect to mBean server. (example -c LOCAL:<PID> ==> -c LOCAL:2060").hasArgs(1).create('c'));
+		options.addOption(OptionBuilder.withDescription("Connect to bean.").withArgName("beanName").hasArgs(1).create('b'));
 		options.addOption(OptionBuilder.withDescription("Run script from file.").withArgName("file").hasArgs(1).create('f'));
 		options.addOption(OptionBuilder.withDescription("Show local java processes and exit.").create('p'));
 		
@@ -148,6 +149,10 @@ public class TJConsole {
 		    if (cli.hasOption('c')) {
 		    	String cliArg = cli.getOptionValue('c');
 		    	new ConnectCommand(console.context, console.output).action("\\c " + cliArg);
+		    }
+		    if (cli.hasOption('b')) {
+		    	String cliArg = cli.getOptionValue('b');
+		    	new BeanCommand(console.context, console.output).action("\\b " + cliArg);
 		    }
 		    if (cli.hasOption('f')) {
 		    	String cliArg = cli.getOptionValue('f');
@@ -180,7 +185,7 @@ public class TJConsole {
 	private static void printHelp(Options options, PrintStream outStream) {
 		PrintWriter out = new PrintWriter(outStream);
 		HelpFormatter helpFormatter = new HelpFormatter();
-		helpFormatter.printHelp(out, 80, "ant", "TJConsole", options, 3, 2, "", false);
+		helpFormatter.printHelp(out, 80, "tjconsole", "TJConsole - text jconsole.", options, 3, 2, "", false);
 		out.flush();
 	}
 

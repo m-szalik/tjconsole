@@ -46,7 +46,7 @@ public class ConnectCommand extends AbstractCommand implements Completor {
 	}
 
 	@Override
-	public void action(String input)	throws Exception {
+	public void action(String input) throws Exception {
 		Map<String,Object> env = ctx.getEnviroment();
 		if (env.get("SSL").equals(Boolean.TRUE)) throw new IllegalArgumentException("SSL not supported.");
 		if (env.get("USERNAME").toString().length() + env.get("PASSWORD").toString().length() > 0) throw new IllegalArgumentException("USER/PASS not supported.");
