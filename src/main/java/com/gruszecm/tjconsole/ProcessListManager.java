@@ -32,18 +32,25 @@ public class ProcessListManager {
 	private Collection<String> checkLPS() throws IOException {
 		ProcessBuilder pb = new ProcessBuilder("jps");
 		Process process = pb.start();
-		BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		ArrayList<String> list = new ArrayList<String>();
-		String l ;
-		while((l = br.readLine()) != null) {
-			String[] ll = l.split(" ", 2);
-			if (ll[1].equalsIgnoreCase("jps")) continue;
-			int pid = Integer.valueOf(ll[0]);
-			if (ConnectorAddressLink.importFrom(pid) != null) {
-				list.add(LOCAL_PREFIX + pid + " - " + ll[1]);
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			ArrayList<String> list = new ArrayList<String>();
+			String l ;
+			while((l = br.readLine()) != null) {
+				String[] ll = l.split(" ", 2);
+				if (ll[1].equalsIgnoreCase("jps")) continue;
+				int pid = Integer.valueOf(ll[0]);
+				if (ConnectorAddressLink.importFrom(pid) != null) {
+					list.add(LOCAL_PREFIX + pid + " - " + ll[1]);
+				}
+			}
+			return list;
+		} finally {
+			if (br != null) {
+				br.close();
 			}
 		}
-		return list;
 	}
 
 	public boolean isLocalProcess(String url) {

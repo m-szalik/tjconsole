@@ -136,48 +136,46 @@ public class TJConsole {
 			CommandLine cli = null;
 		    try {
 		        cli = parser.parse( options, args );
-		    }
-		    catch( ParseException exp ) {
+		        if (cli.hasOption('q')) {
+			    	consoleOutput.setDisplayInfo(false);
+			    }
+			    if (cli.hasOption('h')) {
+			    	printHelp(options, System.out);
+			    	System.exit(0);
+			    }
+			    if (cli.hasOption('c')) {
+			    	String cliArg = cli.getOptionValue('c');
+			    	new ConnectCommand(console.context, console.output).action("\\c " + cliArg);
+			    }
+			    if (cli.hasOption('b')) {
+			    	String cliArg = cli.getOptionValue('b');
+			    	new BeanCommand(console.context, console.output).action("\\b " + cliArg);
+			    }
+			    if (cli.hasOption('f')) {
+			    	String cliArg = cli.getOptionValue('f');
+			    	BufferedReader fileReader = new BufferedReader(new FileReader(new File(cliArg)));
+			    	String s;
+			    	while ((s = fileReader.readLine()) != null) {
+			    		s = s.trim();
+			    		if (s.startsWith("#") || s.length() == 0) continue;
+			    		if (! console.processCommand(s))  {
+			    			System.exit(1);
+			    		}
+			    	}
+			    	System.exit(0);
+			    }
+			    if (cli.hasOption('p')) {
+			    	ProcessListManager processListManager = new ProcessListManager();
+			    	for(String ps : processListManager.getLocalProcesses()) {
+			    		System.out.println(ps);
+			    	}
+			    	System.exit(0);
+			    }
+		    } catch(ParseException exp ) {
 		        System.err.println( "Parsing failed.  Reason: " + exp.getMessage());
 		        printHelp(options, System.err);
 		    }
-		    if (cli.hasOption('q')) {
-		    	consoleOutput.setDisplayInfo(false);
-		    }
-		    if (cli.hasOption('h')) {
-		    	printHelp(options, System.out);
-		    	System.exit(0);
-		    }
-		    if (cli.hasOption('c')) {
-		    	String cliArg = cli.getOptionValue('c');
-		    	new ConnectCommand(console.context, console.output).action("\\c " + cliArg);
-		    }
-		    if (cli.hasOption('b')) {
-		    	String cliArg = cli.getOptionValue('b');
-		    	new BeanCommand(console.context, console.output).action("\\b " + cliArg);
-		    }
-		    if (cli.hasOption('f')) {
-		    	String cliArg = cli.getOptionValue('f');
-		    	BufferedReader fileReader = new BufferedReader(new FileReader(new File(cliArg)));
-		    	String s;
-		    	while ((s = fileReader.readLine()) != null) {
-		    		s = s.trim();
-		    		if (s.startsWith("#") || s.length() == 0) continue;
-		    		if (! console.processCommand(s))  {
-		    			System.exit(1);
-		    		}
-		    	}
-		    	System.exit(0);
-		    }
-		    if (cli.hasOption('p')) {
-		    	ProcessListManager processListManager = new ProcessListManager();
-		    	for(String ps : processListManager.getLocalProcesses()) {
-		    		System.out.println(ps);
-		    	}
-		    	System.exit(0);
-		    }
 		}
-		
 		System.err.println(props.getProperty("message.welcome","Welcome to tjconsole"));
 		console.read();
 		System.out.println("Quit.");

@@ -35,7 +35,9 @@ public class TJContext {
 	public void setEvniromentVariable(String key, Object value) {
 		if (! enviroment.containsKey(key)) throw new IllegalArgumentException("Invalid key - " + key);
 		Object old = enviroment.get(key);
-		if (! old.getClass().equals(value.getClass())) new IllegalArgumentException("Invalid value type - " + value.getClass().getName() + " should be " + old.getClass().getName());
+		if (! old.getClass().equals(value.getClass())){
+			throw new IllegalArgumentException("Invalid value type - " + value.getClass().getName() + " should be " + old.getClass().getName());
+		}
 		enviroment.put(key, value);
 	}
 	
