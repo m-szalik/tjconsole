@@ -20,7 +20,7 @@ Perfect if you have only text console or terminal. You can use it also for commu
 Apache License 2.0
 
 ### Downloads
- * [tjconsole-1.4-all](./bin/tjconsole-1.4-all.jar)
+Go to [wiki](https://github.com/m-szalik/tjconsole/wiki).
 
 ### Problems and questions
 In case of problems or questions? [Create an issue](https://github.com/m-szalik/tjconsole/issues) on GitHub.
