@@ -23,20 +23,20 @@ public class BeanCommand extends AbstractCommand implements Completor {
 	@Override
 	public void action(String input)	throws Exception {
 		StringBuilder sb = new StringBuilder();
-		String bname = extractURL(input);
-		if (bname.length() == 0) {
+		String bName = extractURL(input);
+		if (bName.length() == 0) {
 			for(String bn : names()) {
 				sb.append("\t* ").append(bn).append('\n');
 				output.outInfo(sb.toString());
 			}
 		} else {
-			output.outInfo("Connecting to bean " + bname + "...");
-			ObjectName objectName = new ObjectName(bname);
+			output.outInfo("Connecting to bean " + bName + "...");
+			ObjectName objectName = new ObjectName(bName);
 			if (ctx.getServer().isRegistered(objectName)) {
-				output.outInfo("Connected to bean " + bname);
+				output.outInfo("Connected to bean " + bName);
 				ctx.setObjectName(objectName);
 			} else {
-				output.outError("Bean " + bname + " not found.");
+				output.outError("Bean " + bName + " not found.");
 				ctx.setObjectName(null);
 			}
 		}
@@ -50,12 +50,12 @@ public class BeanCommand extends AbstractCommand implements Completor {
 	@SuppressWarnings("unchecked")
 	public int complete(String buffer, int cursor, List candidates) {
 		if (matches(buffer) && ctx.isConnected()) {
-			String urlprefix = extractURL(buffer);
+			String urlPrefix = extractURL(buffer);
 			try {
 				for(String s : names()) {
-					if (s.startsWith(urlprefix)) candidates.add(s);
+					if (s.startsWith(urlPrefix)) candidates.add(s);
 				}
-			} catch (IOException e) {	}
+			} catch (IOException e) { /* FIXME do not leave empty catch statements */	}
 			return PREFIX.length();
 		} else {
 			return -1;

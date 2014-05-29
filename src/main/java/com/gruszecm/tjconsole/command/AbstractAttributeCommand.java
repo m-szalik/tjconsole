@@ -19,7 +19,7 @@ public abstract class AbstractAttributeCommand extends AbstractCommand implement
 	@Override
 	public void action(String input) throws Exception {
 		String attribute = attribute(input);
-		if (ctx.getEnviroment().containsKey(attribute)) {
+		if (ctx.getEnvironment().containsKey(attribute)) {
 			actionEvn(input, attribute);
 		} else {
 			actionBean(input, attribute);
@@ -41,18 +41,18 @@ public abstract class AbstractAttributeCommand extends AbstractCommand implement
 
 	@SuppressWarnings("unchecked")
 	public int complete(String buffer, int cursor, List candidates) {
-		String cSufix = getCSuffix();
+		String cSuffix = getCSuffix();
 		if (matches(buffer)) {
 			String att = attribute(buffer);
 			try {
 				for(MBeanAttributeInfo ai : ctx.getAttributes()) {
-					if (ai.getName().startsWith(att) && correctAttribute(ai)) candidates.add(ai.getName() + cSufix);
+					if (ai.getName().startsWith(att) && correctAttribute(ai)) candidates.add(ai.getName() + cSuffix);
 				}
 			} catch (Exception e) {
 				throw new RuntimeException("Error getting attributes.", e);
 			}
-			for(String ai : ctx.getEnviroment().keySet()) {
-				if (ai.startsWith(att)) candidates.add(ai + cSufix);
+			for(String ai : ctx.getEnvironment().keySet()) {
+				if (ai.startsWith(att)) candidates.add(ai + cSuffix);
 			}
 			return PREFIX.length() +1;
 		} else {

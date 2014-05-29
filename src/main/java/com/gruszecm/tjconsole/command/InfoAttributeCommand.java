@@ -24,7 +24,7 @@ public class InfoAttributeCommand extends AbstractAttributeCommand {
 	@Override
 	protected void actionEvn(String input, String attribute) throws Exception {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Envioment variable - ").append(attribute).append('\n');
+		sb.append("Environment variable - ").append(attribute).append('\n');
 		output.outMBeanOutput(sb.toString());
 	}
 	

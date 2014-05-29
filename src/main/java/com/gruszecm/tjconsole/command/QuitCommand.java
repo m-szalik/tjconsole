@@ -5,7 +5,7 @@ import com.gruszecm.tjconsole.TJConsole;
 import com.gruszecm.tjconsole.TJContext;
 
 public class QuitCommand extends AbstractCommand {
-	private TJConsole console;
+	private final TJConsole console;
 	
 	public QuitCommand(TJContext context, Output output, TJConsole console) {
 		super(context, output);

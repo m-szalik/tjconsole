@@ -43,7 +43,7 @@ public class GetAttributeCommand extends AbstractAttributeCommand {
 	protected void actionEvn(String input, String attribute) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append(attribute).append(" = ");
-		sb.append(ctx.getEnviroment().get(attribute).toString());
+		sb.append(ctx.getEnvironment().get(attribute).toString());
 		sb.append('\n');
 		output.outMBeanOutput(sb.toString());
 	}

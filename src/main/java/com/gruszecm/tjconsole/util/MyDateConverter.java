@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.beanutils.Converter;
 
 public class MyDateConverter implements Converter {
-	private Map<Pattern,DateFormat> patterns;
+	private final Map<Pattern,DateFormat> patterns;
 	
 	public MyDateConverter() {
 		patterns = new HashMap<Pattern, DateFormat>();

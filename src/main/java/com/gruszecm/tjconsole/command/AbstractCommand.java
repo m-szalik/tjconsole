@@ -4,8 +4,8 @@ import com.gruszecm.tjconsole.Output;
 import com.gruszecm.tjconsole.TJContext;
 
 public abstract class AbstractCommand {
-	protected TJContext ctx;;
-	protected Output output;
+	protected final TJContext ctx;
+	protected final Output output;
 
 	public AbstractCommand(TJContext ctx, Output output) {
 		super();

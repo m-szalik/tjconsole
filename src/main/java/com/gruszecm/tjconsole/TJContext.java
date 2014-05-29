@@ -19,26 +19,26 @@ import javax.management.ReflectionException;
 public class TJContext { 
 	private MBeanServerConnection serverConnection;
 	private ObjectName objectName;
-	private Map<String,Object> enviroment;
+	private final Map<String,Object> environment;
 	
 	public TJContext() {
-		enviroment = new LinkedHashMap<String, Object>();
-		enviroment.put("SSL", Boolean.FALSE);
-		enviroment.put("USERNAME", "");
-		enviroment.put("PASSWORD", "");
+		environment = new LinkedHashMap<String, Object>();
+		environment.put("SSL", Boolean.FALSE);
+		environment.put("USERNAME", "");
+		environment.put("PASSWORD", "");
 	}
 	
-	public Map<String, Object> getEnviroment() {
-		return Collections.unmodifiableMap(enviroment);
+	public Map<String, Object> getEnvironment() {
+		return Collections.unmodifiableMap(environment);
 	}
 	
-	public void setEvniromentVariable(String key, Object value) {
-		if (! enviroment.containsKey(key)) throw new IllegalArgumentException("Invalid key - " + key);
-		Object old = enviroment.get(key);
+	public void setEnvironmentVariable(String key, Object value) {
+		if (! environment.containsKey(key)) throw new IllegalArgumentException("Invalid key - " + key);
+		Object old = environment.get(key);
 		if (! old.getClass().equals(value.getClass())){
 			throw new IllegalArgumentException("Invalid value type - " + value.getClass().getName() + " should be " + old.getClass().getName());
 		}
-		enviroment.put(key, value);
+		environment.put(key, value);
 	}
 	
 	public MBeanServerConnection getServer() {

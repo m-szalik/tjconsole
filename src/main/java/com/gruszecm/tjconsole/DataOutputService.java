@@ -8,8 +8,8 @@ import java.util.Map;
 import javax.management.openmbean.CompositeDataSupport;
 
 public abstract class DataOutputService {
-	private static DataOutputService defaultDataOutputService = new ToStringDataOutputService();
-	private static Map<String, DataOutputService> dataOutputServices;
+	private static final DataOutputService defaultDataOutputService = new ToStringDataOutputService();
+	private static final Map<String, DataOutputService> dataOutputServices;
 	
 	static {
 		dataOutputServices = new HashMap<String, DataOutputService>();
@@ -61,10 +61,9 @@ class ArrayDataOutputService extends DataOutputService {
 
 	@Override
 	public void output(Object data, Appendable output) throws IOException {
-		Object array = data;
 		output.append("Array[\n");
-		for(int i=0; i<Array.getLength(array); i++) {
-			Object o = Array.get(array, i);
+		for(int i=0; i<Array.getLength(data); i++) {
+			Object o = Array.get(data, i);
 			output.append("index:" + i).append(" = ");
 			get(o.getClass().getName()).output(o, output);
 			output.append('\n');

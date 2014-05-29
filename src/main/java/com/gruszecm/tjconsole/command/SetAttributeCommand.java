@@ -25,9 +25,9 @@ public class SetAttributeCommand extends AbstractAttributeCommand {
 
 	@Override
 	protected void actionEvn(String input, String attribute) throws Exception {
-		Object oldV = ctx.getEnviroment().get(attribute);
+		Object oldV = ctx.getEnvironment().get(attribute);
 		Object newV = ConvertUtils.convert((String)getValue(input, "string"), oldV.getClass());
-		ctx.setEvniromentVariable(attribute, newV);
+		ctx.setEnvironmentVariable(attribute, newV);
 		StringBuilder sb = new StringBuilder();
 		sb.append("SET " + attribute + " TO " + newV);
 		output.outInfo(sb.toString());

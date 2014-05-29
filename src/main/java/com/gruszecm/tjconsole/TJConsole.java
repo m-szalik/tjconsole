@@ -28,13 +28,13 @@ import com.gruszecm.tjconsole.command.ConnectCommand;
 import com.gruszecm.tjconsole.command.GetAttributeCommand;
 import com.gruszecm.tjconsole.command.HelpCommand;
 import com.gruszecm.tjconsole.command.InfoAttributeCommand;
-import com.gruszecm.tjconsole.command.OperationCommaand;
+import com.gruszecm.tjconsole.command.OperationCommand;
 import com.gruszecm.tjconsole.command.QuitCommand;
 import com.gruszecm.tjconsole.command.SetAttributeCommand;
 
 
 public class TJConsole {
-	private TJContext context;
+	private final TJContext context;
 	private ConsoleReader reader;
 	private Output output;
 	private boolean quit = false;
@@ -43,7 +43,7 @@ public class TJConsole {
 	private HelpCommand helpCommand;
 	private String propmptPattern;
 	
-	public TJConsole(Output out) throws IOException, BackingStoreException {
+	private TJConsole(Output out) throws IOException, BackingStoreException {
 		context = new TJContext();
 		reader = new ConsoleReader ();
 		reader.setDebug (new PrintWriter (new FileWriter ("writer.debug", true)));
@@ -58,7 +58,7 @@ public class TJConsole {
 		add(new GetAttributeCommand(context, output));
 		add(new SetAttributeCommand(context, output));
 		add(new InfoAttributeCommand(context, output));
-		add(new OperationCommaand(context, output));
+		add(new OperationCommand(context, output));
 	}
 	
 	
@@ -133,7 +133,7 @@ public class TJConsole {
 		
 		if (args.length > 0) {
 			CommandLineParser parser = new GnuParser();
-			CommandLine cli = null;
+			CommandLine cli;
 		    try {
 		        cli = parser.parse( options, args );
 		        if (cli.hasOption('q')) {

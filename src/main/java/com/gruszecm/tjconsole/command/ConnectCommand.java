@@ -21,33 +21,33 @@ import com.gruszecm.tjconsole.TJContext;
 public class ConnectCommand extends AbstractCommand implements Completor {
 	private static final String PREFIX = "\\c";
 	
-	private List<String> remoteConnectionHistory;
-	private Preferences prefs;
-	private ProcessListManager processListManager = new ProcessListManager();
+	private final List<String> remoteConnectionHistory;
+	private final Preferences prefs;
+	private final ProcessListManager processListManager = new ProcessListManager();
 	
 	public ConnectCommand(TJContext context, Output output) throws BackingStoreException {
 		super(context, output);
 		remoteConnectionHistory = new ArrayList<String>();
 		prefs = Preferences.userNodeForPackage(getClass());
 		for(String key : prefs.keys()) {
-			String rname = prefs.get(key, null);
-			if (rname != null) addRemote(rname, false);
+			String rName = prefs.get(key, null);
+			if (rName != null) addRemote(rName, false);
 		}
 	}
 
-	private void addRemote(String rname, boolean b) {
-		if (remoteConnectionHistory.contains(rname)) return;
-		remoteConnectionHistory.add(rname);
+	private void addRemote(String rName, boolean b) {
+		if (remoteConnectionHistory.contains(rName)) return;
+		remoteConnectionHistory.add(rName);
 		if (b) {
 			try {
-				prefs.put("RNAME_" + (prefs.keys().length+1), rname);
+				prefs.put("RNAME_" + (prefs.keys().length+1), rName);
 			} catch (BackingStoreException e) {			e.printStackTrace();		}
 		}
 	}
 
 	@Override
 	public void action(String input) throws Exception {
-		Map<String,Object> env = ctx.getEnviroment();
+		Map<String,Object> env = ctx.getEnvironment();
 		if (env.get("SSL").equals(Boolean.TRUE)) throw new IllegalArgumentException("SSL not supported.");
 		if (env.get("USERNAME").toString().length() + env.get("PASSWORD").toString().length() > 0) throw new IllegalArgumentException("USER/PASS not supported.");
 		
@@ -71,9 +71,9 @@ public class ConnectCommand extends AbstractCommand implements Completor {
 				serviceURL = processListManager.getLocalServiceURL(url);
 			} else {
 				String port = "", host = "";
-				String[]urlp = url.split(":",2);
-				host = urlp[0];
-				if (urlp.length == 2) port = urlp[1];
+				String[]urlParts = url.split(":",2);
+				host = urlParts[0];
+				if (urlParts.length == 2) port = urlParts[1];
 				serviceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host+ ":"+port+"/jmxrmi");
 				remote = true;
 			}

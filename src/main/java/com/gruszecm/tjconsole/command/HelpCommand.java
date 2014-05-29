@@ -9,7 +9,7 @@ import com.gruszecm.tjconsole.Output;
 import com.gruszecm.tjconsole.TJContext;
 
 public class HelpCommand extends AbstractCommand implements Completor{
-	private List<CommandHelp> commandHelps;
+	private final List<CommandHelp> commandHelps;
 
 	public HelpCommand(TJContext ctx, Output output) {
 		super(ctx, output);
