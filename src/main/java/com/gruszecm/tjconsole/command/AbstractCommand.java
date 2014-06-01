@@ -3,20 +3,43 @@ package com.gruszecm.tjconsole.command;
 import com.gruszecm.tjconsole.Output;
 import com.gruszecm.tjconsole.TJContext;
 
+/**
+ * Command
+ *
+ * @author szalik
+ */
 public abstract class AbstractCommand {
-	protected final TJContext ctx;
-	protected final Output output;
+    protected final TJContext ctx;
+    protected final Output output;
 
-	public AbstractCommand(TJContext ctx, Output output) {
-		super();
-		this.ctx = ctx;
-		this.output = output;
-	}
+    public AbstractCommand(TJContext ctx, Output output) {
+        super();
+        this.ctx = ctx;
+        this.output = output;
+    }
 
-	public abstract boolean matches(String input);
-	
-	public abstract void action(String input) throws Exception;
 
-	public abstract CommandHelp getHelp();
-	
+    /**
+     * If input matches the command
+     *
+     * @param input input to check
+     * @return true if matched, otherwise false
+     */
+    public abstract boolean matches(String input);
+
+
+    /**
+     * Execute command
+     *
+     * @param input command input
+     * @throws Exception if command cannot be executed properly
+     */
+    public abstract void action(String input) throws Exception;
+
+
+    /**
+     * @return get help description for the command
+     */
+    public abstract CmdDescription getHelp();
+
 }
