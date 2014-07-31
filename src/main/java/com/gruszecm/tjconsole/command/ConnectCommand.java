@@ -127,7 +127,7 @@ public class ConnectCommand extends AbstractCommand implements Completor {
 
     @Override
     public CmdDescription getHelp() {
-        return new CmdDescription("Connect to mbean server.", "\\c hostname:port OR LOCAL", "\\c");
+        return new CmdDescription("Connect to mbean server.", "\\c hostname:port OR LOCAL:pid", "\\c");
     }
 
 
