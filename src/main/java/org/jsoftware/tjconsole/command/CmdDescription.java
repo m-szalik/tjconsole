@@ -1,6 +1,6 @@
-package com.gruszecm.tjconsole.command;
+package org.jsoftware.tjconsole.command;
 
-import com.gruszecm.tjconsole.TJContext;
+import org.jsoftware.tjconsole.TJContext;
 
 import java.io.Serializable;
 

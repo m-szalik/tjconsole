@@ -1,4 +1,4 @@
-package com.gruszecm.tjconsole;
+package org.jsoftware.tjconsole;
 
 public class Output {
     private boolean displayInfo = true;

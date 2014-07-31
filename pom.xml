@@ -88,7 +88,7 @@
                     </descriptors>
                     <archive>
                         <manifest>
-                            <mainClass>com.gruszecm.tjconsole.TJConsole</mainClass>
+                            <mainClass>org.jsoftware.tjconsole.TJConsole</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

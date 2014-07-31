@@ -1,4 +1,4 @@
-package com.gruszecm.tjconsole.util;
+package org.jsoftware.tjconsole.util;
 
 import org.apache.commons.beanutils.Converter;
 

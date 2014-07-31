@@ -1,9 +1,9 @@
-package com.gruszecm.tjconsole.command;
+package org.jsoftware.tjconsole.command;
 
-import com.gruszecm.tjconsole.DataOutputService;
-import com.gruszecm.tjconsole.Output;
-import com.gruszecm.tjconsole.TJContext;
-import com.gruszecm.tjconsole.util.MyDateConverter;
+import org.jsoftware.tjconsole.DataOutputService;
+import org.jsoftware.tjconsole.Output;
+import org.jsoftware.tjconsole.TJContext;
+import org.jsoftware.tjconsole.util.MyDateConverter;
 import jline.Completor;
 import org.apache.commons.beanutils.ConvertUtils;
 

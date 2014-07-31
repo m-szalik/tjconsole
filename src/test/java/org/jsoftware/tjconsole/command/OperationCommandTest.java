@@ -1,5 +1,6 @@
-package com.gruszecm.tjconsole.command;
+package org.jsoftware.tjconsole.command;
 
+import org.jsoftware.tjconsole.command.OperationCommand;
 import org.junit.Assert;
 import org.junit.Test;
 
