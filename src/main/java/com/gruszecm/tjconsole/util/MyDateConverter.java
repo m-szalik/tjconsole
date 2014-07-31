@@ -38,7 +38,7 @@ public class MyDateConverter implements Converter {
             }
         }
         if (dateFormat == null) {
-            throw new IllegalArgumentException("Can not convert do date - " + value);
+            throw new IllegalArgumentException("Cannot convert do date - " + value);
         }
         try {
             return dateFormat.parse(value.toString());

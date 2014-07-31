@@ -87,7 +87,7 @@ public class ProcessListManager {
         int pid = Integer.parseInt(s);
         String serviceURL = null; // TODO //ConnectorAddressLink.importFrom(pid);
         if (serviceURL == null) {
-            throw new IOException("Can not connect to local process - " + pid);
+            throw new IOException("Cannot connect to local process - " + pid);
         }
         return new JMXServiceURL(serviceURL);
     }
