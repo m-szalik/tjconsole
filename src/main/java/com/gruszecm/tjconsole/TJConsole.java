@@ -29,7 +29,6 @@ public class TJConsole {
     private TJConsole(Output out) throws IOException, BackingStoreException {
         context = new TJContext();
         reader = new ConsoleReader();
-        reader.setDebug(new PrintWriter(new FileWriter("writer.debug", true)));
         output = out;
         commands = new ArrayList<AbstractCommand>();
 
