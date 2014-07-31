@@ -63,6 +63,10 @@ public class TJConsole {
         while (!quit) {
             printPrompt();
             String line = reader.readLine();
+            if (line == null) {
+                System.err.println("\nBye...");
+                System.exit(0);
+            }
             processCommand(line);
         }
     }
