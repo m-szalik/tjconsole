@@ -78,6 +78,7 @@
                     <showWarnings>true</showWarnings>
                     <optimize>true</optimize>
                     <debug>false</debug>
+                    <compilerArgument>-nowarn</compilerArgument>
                 </configuration>
             </plugin>
             <plugin>
