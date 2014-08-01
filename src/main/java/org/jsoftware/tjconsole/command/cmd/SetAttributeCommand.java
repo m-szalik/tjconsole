@@ -1,8 +1,9 @@
-package org.jsoftware.tjconsole.command;
+package org.jsoftware.tjconsole.command.cmd;
 
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.TJContext;
 import org.apache.commons.beanutils.ConvertUtils;
+import org.jsoftware.tjconsole.command.CmdDescription;
 
 import javax.management.Attribute;
 import javax.management.MBeanAttributeInfo;
@@ -32,7 +33,7 @@ public class SetAttributeCommand extends AbstractAttributeCommand {
         Object newV = ConvertUtils.convert((String) getValue(input, "string"), oldV.getClass());
         ctx.setEnvironmentVariable(attribute, newV);
         StringBuilder sb = new StringBuilder();
-        sb.append("SET " + attribute + " TO " + newV);
+        sb.append("set " + attribute + " " + newV);
         output.outInfo(sb.toString());
     }
 
@@ -93,7 +94,7 @@ public class SetAttributeCommand extends AbstractAttributeCommand {
 
     @Override
     public CmdDescription getHelp() {
-        return new CmdDescription("Set attribute value.", "SET attributeName newValue", "SET");
+        return new CmdDescription("Set attribute value.", "Set attributeName newValue", "set");
     }
 
 

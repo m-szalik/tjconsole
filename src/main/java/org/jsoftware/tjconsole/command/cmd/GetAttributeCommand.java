@@ -1,8 +1,9 @@
-package org.jsoftware.tjconsole.command;
+package org.jsoftware.tjconsole.command.cmd;
 
 import org.jsoftware.tjconsole.DataOutputService;
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.TJContext;
+import org.jsoftware.tjconsole.command.CmdDescription;
 
 import javax.management.MBeanAttributeInfo;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class GetAttributeCommand extends AbstractAttributeCommand {
 
     @Override
     protected String getPrefix() {
-        return "GET";
+        return "get";
     }
 
     @Override
@@ -54,7 +55,7 @@ public class GetAttributeCommand extends AbstractAttributeCommand {
 
     @Override
     public CmdDescription getHelp() {
-        return new CmdDescription("Get attribute value", "GET [attributeName]", "GET");
+        return new CmdDescription("Get attribute value", "get [attributeName]", "get");
     }
 
 }

@@ -1,8 +1,9 @@
-package org.jsoftware.tjconsole.command;
+package org.jsoftware.tjconsole.command.cmd;
 
 import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.TJContext;
+import org.jsoftware.tjconsole.command.CmdDescription;
 
 import javax.management.ObjectName;
 import java.io.IOException;
@@ -15,11 +16,11 @@ import java.util.List;
  *
  * @author szalik
  */
-public class BeanCommand extends AbstractCommand implements Completer {
-    private static final String PREFIX = "\\b";
+public class UseCommand extends AbstractCommand implements Completer {
+    private static final String PREFIX = "use ";
 
 
-    public BeanCommand(TJContext ctx, Output output) {
+    public UseCommand(TJContext ctx, Output output) {
         super(ctx, output);
     }
 
@@ -73,7 +74,7 @@ public class BeanCommand extends AbstractCommand implements Completer {
 
     @Override
     public CmdDescription getHelp() {
-        return new CmdDescription("Select bean.", "\\b beanName", "\\b") {
+        return new CmdDescription("Select bean.", "use beanName", "use") {
             private static final long serialVersionUID = 7806368129076996728L;
 
             @Override

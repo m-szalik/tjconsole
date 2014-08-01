@@ -1,16 +1,12 @@
-package org.jsoftware.tjconsole.local;
+package org.jsoftware.tjconsole.localjvm;
 
 import com.sun.tools.attach.*;
 
 import java.io.File;
 import java.util.*;
 
-import sun.management.ConnectorAddressLink;
-
 import javax.management.remote.JMXServiceURL;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,8 +33,8 @@ public class ProcessListManager {
 
 
     /**
-     * @param url string of local mxBeanServer url
-     * @return MxBeanServer URL for local process
+     * @param url string of localjvm mxBeanServer url
+     * @return MxBeanServer URL for localjvm process
      * @throws IOException
      * @see #getLocalProcessList()
      */

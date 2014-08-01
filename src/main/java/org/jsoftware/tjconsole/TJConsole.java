@@ -3,10 +3,10 @@ package org.jsoftware.tjconsole;
 import jline.console.ConsoleReader;
 import jline.console.completer.Completer;
 import org.apache.commons.cli.*;
-import org.jsoftware.tjconsole.command.*;
-import org.jsoftware.tjconsole.local.JvmPid;
-import org.jsoftware.tjconsole.local.ProcessListManager;
-import org.jsoftware.tjconsole.local.ProcessListManagerLoader;
+import org.jsoftware.tjconsole.command.cmd.*;
+import org.jsoftware.tjconsole.localjvm.JvmPid;
+import org.jsoftware.tjconsole.localjvm.ProcessListManager;
+import org.jsoftware.tjconsole.localjvm.ProcessListManagerLoader;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -38,12 +38,12 @@ public class TJConsole {
         helpCommand = new HelpCommand(context, output);
         add(helpCommand);
         add(new QuitCommand(context, output, this));
-        add(new ConnectCommand(context, output));
-        add(new BeanCommand(context, output));
+        add(new OpenCommand(context, output));
+        add(new UseCommand(context, output));
         add(new GetAttributeCommand(context, output));
         add(new SetAttributeCommand(context, output));
-        add(new InfoAttributeCommand(context, output));
-        add(new OperationCommand(context, output));
+        add(new DescribeCommand(context, output));
+        add(new InvokeOperationCommand(context, output));
     }
 
 
@@ -114,7 +114,7 @@ public class TJConsole {
         options.addOption(OptionBuilder.withDescription("Connect to mBean server. (example -c "+ProcessListManagerLoader.LOCAL_PREFIX+"<PID> ==> -c "+ ProcessListManagerLoader.LOCAL_PREFIX+"2060").hasArgs(1).create('c'));
         options.addOption(OptionBuilder.withDescription("Connect to bean.").withArgName("beanName").hasArgs(1).create('b'));
         options.addOption(OptionBuilder.withDescription("Run script from file.").withArgName("file").hasArgs(1).create('f'));
-        options.addOption(OptionBuilder.withDescription("Show local java processes and exit.").create('p'));
+        options.addOption(OptionBuilder.withDescription("Show localjvm java processes and exit.").create('p'));
 
         Output consoleOutput = new Output();
         TJConsole console = new TJConsole(consoleOutput);
@@ -134,11 +134,11 @@ public class TJConsole {
                 }
                 if (cli.hasOption('c')) {
                     String cliArg = cli.getOptionValue('c');
-                    new ConnectCommand(console.context, console.output).action("\\c " + cliArg);
+                    new OpenCommand(console.context, console.output).action("\\c " + cliArg);
                 }
                 if (cli.hasOption('b')) {
                     String cliArg = cli.getOptionValue('b');
-                    new BeanCommand(console.context, console.output).action("\\b " + cliArg);
+                    new UseCommand(console.context, console.output).action("\\b " + cliArg);
                 }
                 if (cli.hasOption('f')) {
                     String cliArg = cli.getOptionValue('f');

@@ -1,8 +1,9 @@
-package org.jsoftware.tjconsole.command;
+package org.jsoftware.tjconsole.command.cmd;
 
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.TJConsole;
 import org.jsoftware.tjconsole.TJContext;
+import org.jsoftware.tjconsole.command.CmdDescription;
 
 /**
  * Quit command. Quits an application.
@@ -24,12 +25,12 @@ public class QuitCommand extends AbstractCommand {
 
     @Override
     public boolean matches(String input) {
-        return input.equalsIgnoreCase("\\q") || input.equalsIgnoreCase("quit");
+        return input.equalsIgnoreCase("q") || input.equalsIgnoreCase("quit");
     }
 
     @Override
     public CmdDescription getHelp() {
-        return new CmdDescription("Quit.", "\\q", "\\q");
+        return new CmdDescription("Quit.", "quit", "q");
     }
 
 

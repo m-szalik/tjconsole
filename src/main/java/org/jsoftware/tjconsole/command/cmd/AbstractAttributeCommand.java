@@ -1,4 +1,4 @@
-package org.jsoftware.tjconsole.command;
+package org.jsoftware.tjconsole.command.cmd;
 
 import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.Output;

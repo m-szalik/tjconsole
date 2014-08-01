@@ -24,6 +24,7 @@ public class MyDateConverter implements Converter {
         patterns.put(Pattern.compile("\\d{2}-\\d{2}-\\d{4}"), new SimpleDateFormat("dd-MM-yyyy"));
         patterns.put(Pattern.compile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}"), new SimpleDateFormat("yyyy-MM-dd HH:mm"));
         patterns.put(Pattern.compile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}"), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        patterns.put(Pattern.compile("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"), new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
     }
 
 

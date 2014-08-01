@@ -1,8 +1,9 @@
-package org.jsoftware.tjconsole.command;
+package org.jsoftware.tjconsole.command.cmd;
 
 import org.jsoftware.tjconsole.DataOutputService;
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.TJContext;
+import org.jsoftware.tjconsole.command.CmdDescription;
 
 import javax.management.MBeanAttributeInfo;
 import java.util.ArrayList;
@@ -14,15 +15,15 @@ import java.util.List;
  *
  * @author szalik
  */
-public class InfoAttributeCommand extends AbstractAttributeCommand {
+public class DescribeCommand extends AbstractAttributeCommand {
 
-    public InfoAttributeCommand(TJContext context, Output output) {
+    public DescribeCommand(TJContext context, Output output) {
         super(context, output);
     }
 
     @Override
     protected String getPrefix() {
-        return "\\a";
+        return "describe";
     }
 
     @Override
@@ -68,7 +69,7 @@ public class InfoAttributeCommand extends AbstractAttributeCommand {
 
     @Override
     public CmdDescription getHelp() {
-        return new CmdDescription("Get attribute information.", "\\a [attributeName]", "\\a");
+        return new CmdDescription("Get attribute information.", "describe [attributeName]", "describe");
     }
 
 

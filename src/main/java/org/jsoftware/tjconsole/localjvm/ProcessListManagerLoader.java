@@ -1,10 +1,8 @@
-package org.jsoftware.tjconsole.local;
-
-import com.sun.tools.attach.VirtualMachine;
+package org.jsoftware.tjconsole.localjvm;
 
 /**
  * Check if tools.jar is available
- * Receive local java PIDs
+ * Receive localjvm java PIDs
  * Try to load agent for JMX
  * @author szalik
  */
@@ -35,7 +33,7 @@ public class ProcessListManagerLoader {
 
     /**
      * @param url url to check
-     * @return true if url string is local process url
+     * @return true if url string is localjvm process url
      */
     public static boolean isLocalProcess(String url) {
         return url.startsWith(LOCAL_PREFIX);

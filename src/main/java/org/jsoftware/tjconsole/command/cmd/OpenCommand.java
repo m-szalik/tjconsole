@@ -1,8 +1,9 @@
-package org.jsoftware.tjconsole.command;
+package org.jsoftware.tjconsole.command.cmd;
 
 import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.Output;
-import org.jsoftware.tjconsole.local.*;
+import org.jsoftware.tjconsole.command.CmdDescription;
+import org.jsoftware.tjconsole.localjvm.*;
 import org.jsoftware.tjconsole.TJContext;
 
 import javax.management.MBeanServerConnection;
@@ -21,13 +22,13 @@ import java.util.prefs.Preferences;
  *
  * @author szalik
  */
-public class ConnectCommand extends AbstractCommand implements Completer {
-    private static final String PREFIX = "\\c";
+public class OpenCommand extends AbstractCommand implements Completer {
+    private static final String PREFIX = "open ";
     private final List<String> remoteConnectionHistory;
     private final Preferences prefs;
 
 
-    public ConnectCommand(TJContext context, Output output) throws BackingStoreException {
+    public OpenCommand(TJContext context, Output output) throws BackingStoreException {
         super(context, output);
         remoteConnectionHistory = new ArrayList<String>();
         prefs = Preferences.userNodeForPackage(getClass());
@@ -81,10 +82,10 @@ public class ConnectCommand extends AbstractCommand implements Completer {
                 try {
                     serviceURL = ProcessListManagerLoader.getProcessListManager().getLocalServiceURL(url);
                 } catch (LocalJvmAttachException e) {
-                    output.outError("Unable to connect to local JVM. Run jvm with -Dcom.sun.management.jmxremote");
+                    output.outError("Unable to connect to localjvm JVM. Run jvm with -Dcom.sun.management.jmxremote");
                     return;
                 } catch (ToolsNotAvailableException ex) {
-                    output.outError("Tools extension cannot be found. Unable to connect to local JVM. Enable remote JMX and connect to it remotely.");
+                    output.outError("Tools extension cannot be found. Unable to connect to localjvm JVM. Enable remote JMX and connect to it remotely.");
                     return;
                 }
             } else {
@@ -139,7 +140,7 @@ public class ConnectCommand extends AbstractCommand implements Completer {
 
     @Override
     public CmdDescription getHelp() {
-        return new CmdDescription("Connect to mbean server.", "\\c hostname:port OR LOCAL:pid", "\\c");
+        return new CmdDescription("Connect to mbean server.", "open hostname:port or open local_vm_pid", "open");
     }
 
 

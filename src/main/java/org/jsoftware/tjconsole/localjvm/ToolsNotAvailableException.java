@@ -1,4 +1,4 @@
-package org.jsoftware.tjconsole.local;
+package org.jsoftware.tjconsole.localjvm;
 
 
 public class ToolsNotAvailableException extends Exception {

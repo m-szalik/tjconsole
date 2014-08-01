@@ -1,8 +1,10 @@
-package org.jsoftware.tjconsole.command;
+package org.jsoftware.tjconsole.command.cmd;
 
 import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.TJContext;
+import org.jsoftware.tjconsole.command.CmdDescription;
+
 import java.util.ArrayList;
 import java.util.List;
 

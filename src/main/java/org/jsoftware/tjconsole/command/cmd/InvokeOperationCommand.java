@@ -1,9 +1,10 @@
-package org.jsoftware.tjconsole.command;
+package org.jsoftware.tjconsole.command.cmd;
 
 import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.DataOutputService;
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.TJContext;
+import org.jsoftware.tjconsole.command.CmdDescription;
 import org.jsoftware.tjconsole.util.MyDateConverter;
 import org.apache.commons.beanutils.ConvertUtils;
 
@@ -16,11 +17,11 @@ import java.util.*;
  *
  * @author szalik
  */
-public class OperationCommand extends AbstractCommand implements Completer {
-    private static final String PREFIX = "\\o";
+public class InvokeOperationCommand extends AbstractCommand implements Completer {
+    private static final String PREFIX = "invoke";
 
 
-    public OperationCommand(TJContext ctx, Output output) {
+    public InvokeOperationCommand(TJContext ctx, Output output) {
         super(ctx, output);
         ConvertUtils.deregister(Date.class);
         ConvertUtils.register(new MyDateConverter(), Date.class);
@@ -121,7 +122,7 @@ public class OperationCommand extends AbstractCommand implements Completer {
 
     @Override
     public CmdDescription getHelp() {
-        return new CmdDescription("Invoke operation.", "\\o", PREFIX) {
+        return new CmdDescription("Invoke operation.", "invoke", PREFIX) {
             private static final long serialVersionUID = -3266997299961603873L;
 
             @Override
