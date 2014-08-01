@@ -33,8 +33,8 @@ public class ProcessListManager {
 
 
     /**
-     * @param url string of localjvm mxBeanServer url
-     * @return MxBeanServer URL for localjvm process
+     * @param url string of local jvm mxBeanServer url
+     * @return MxBeanServer URL for local jvm process
      * @throws IOException
      * @see #getLocalProcessList()
      */
