@@ -1,9 +1,8 @@
 package org.jsoftware.tjconsole.command;
 
+import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.TJContext;
-import jline.Completor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +11,7 @@ import java.util.List;
  *
  * @author szalik
  */
-public class HelpCommand extends AbstractCommand implements Completor {
+public class HelpCommand extends AbstractCommand implements Completer {
     private final List<CmdDescription> cmdDescriptions;
 
     public HelpCommand(TJContext ctx, Output output) {

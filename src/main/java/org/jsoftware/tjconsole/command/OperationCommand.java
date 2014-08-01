@@ -1,10 +1,10 @@
 package org.jsoftware.tjconsole.command;
 
+import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.DataOutputService;
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.TJContext;
 import org.jsoftware.tjconsole.util.MyDateConverter;
-import jline.Completor;
 import org.apache.commons.beanutils.ConvertUtils;
 
 import javax.management.MBeanOperationInfo;
@@ -16,7 +16,7 @@ import java.util.*;
  *
  * @author szalik
  */
-public class OperationCommand extends AbstractCommand implements Completor {
+public class OperationCommand extends AbstractCommand implements Completer {
     private static final String PREFIX = "\\o";
 
 

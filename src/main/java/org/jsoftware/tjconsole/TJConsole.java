@@ -1,7 +1,7 @@
 package org.jsoftware.tjconsole;
 
-import jline.Completor;
-import jline.ConsoleReader;
+import jline.console.ConsoleReader;
+import jline.console.completer.Completer;
 import org.apache.commons.cli.*;
 import org.jsoftware.tjconsole.command.*;
 import org.jsoftware.tjconsole.local.JvmPid;
@@ -56,8 +56,8 @@ public class TJConsole {
             commands.add((AbstractCommand) cc);
             helpCommand.addCommand((AbstractCommand) cc);
         }
-        if (cc instanceof Completor) {
-            reader.addCompletor((Completor) cc);
+        if (cc instanceof Completer) {
+            reader.addCompleter((Completer) cc);
         }
     }
 

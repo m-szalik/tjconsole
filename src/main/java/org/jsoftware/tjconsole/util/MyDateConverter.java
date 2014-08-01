@@ -27,7 +27,7 @@ public class MyDateConverter implements Converter {
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "unsafe"})
     public Object convert(Class clazz, Object value) {
         if (value == null) return null;
         DateFormat dateFormat = null;

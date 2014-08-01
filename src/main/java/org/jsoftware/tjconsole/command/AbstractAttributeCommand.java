@@ -1,8 +1,8 @@
 package org.jsoftware.tjconsole.command;
 
+import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.TJContext;
-import jline.Completor;
 
 import javax.management.MBeanAttributeInfo;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author szalik
  */
-public abstract class AbstractAttributeCommand extends AbstractCommand implements Completor {
+public abstract class AbstractAttributeCommand extends AbstractCommand implements Completer {
     private final String PREFIX = getPrefix().toUpperCase();
 
     public AbstractAttributeCommand(TJContext context, Output output) {

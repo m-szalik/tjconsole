@@ -1,9 +1,9 @@
 package org.jsoftware.tjconsole.command;
 
+import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.local.*;
 import org.jsoftware.tjconsole.TJContext;
-import jline.Completor;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
@@ -21,7 +21,7 @@ import java.util.prefs.Preferences;
  *
  * @author szalik
  */
-public class ConnectCommand extends AbstractCommand implements Completor {
+public class ConnectCommand extends AbstractCommand implements Completer {
     private static final String PREFIX = "\\c";
     private final List<String> remoteConnectionHistory;
     private final Preferences prefs;

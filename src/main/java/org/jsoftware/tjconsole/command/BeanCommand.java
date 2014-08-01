@@ -1,8 +1,8 @@
 package org.jsoftware.tjconsole.command;
 
+import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.Output;
 import org.jsoftware.tjconsole.TJContext;
-import jline.Completor;
 
 import javax.management.ObjectName;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author szalik
  */
-public class BeanCommand extends AbstractCommand implements Completor {
+public class BeanCommand extends AbstractCommand implements Completer {
     private static final String PREFIX = "\\b";
 
 
