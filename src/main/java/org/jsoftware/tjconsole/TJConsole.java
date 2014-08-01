@@ -4,6 +4,9 @@ import jline.Completor;
 import jline.ConsoleReader;
 import org.apache.commons.cli.*;
 import org.jsoftware.tjconsole.command.*;
+import org.jsoftware.tjconsole.local.JvmPid;
+import org.jsoftware.tjconsole.local.ProcessListManager;
+import org.jsoftware.tjconsole.local.ProcessListManagerLoader;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -108,7 +111,7 @@ public class TJConsole {
         Options options = new Options();
         options.addOption(OptionBuilder.withDescription("Display this help and exit.").create('h'));
         options.addOption(OptionBuilder.withDescription("Quiet - do not display info messages.").create('q'));
-        options.addOption(OptionBuilder.withDescription("Connect to mBean server. (example -c LOCAL:<PID> ==> -c LOCAL:2060").hasArgs(1).create('c'));
+        options.addOption(OptionBuilder.withDescription("Connect to mBean server. (example -c "+ProcessListManagerLoader.LOCAL_PREFIX+"<PID> ==> -c "+ ProcessListManagerLoader.LOCAL_PREFIX+"2060").hasArgs(1).create('c'));
         options.addOption(OptionBuilder.withDescription("Connect to bean.").withArgName("beanName").hasArgs(1).create('b'));
         options.addOption(OptionBuilder.withDescription("Run script from file.").withArgName("file").hasArgs(1).create('f'));
         options.addOption(OptionBuilder.withDescription("Show local java processes and exit.").create('p'));
@@ -151,9 +154,9 @@ public class TJConsole {
                     System.exit(0);
                 }
                 if (cli.hasOption('p')) {
-                    ProcessListManager processListManager = new ProcessListManager();
-                    for (String ps : processListManager.getLocalProcesses()) {
-                        System.out.println(ps);
+                    ProcessListManager processListManager = ProcessListManagerLoader.getProcessListManager();
+                    for (JvmPid jvm : processListManager.getLocalProcessList()) {
+                        System.out.println(jvm.getPid() + "  " + jvm.getCommand());
                     }
                     System.exit(0);
                 }
@@ -162,7 +165,7 @@ public class TJConsole {
                 printHelp(options, System.err);
             }
         }
-        System.err.println(props.getProperty("message.welcome", "Welcome to tjconsole"));
+        System.err.println(props.getProperty("message.welcome", "Welcome to tJconsole"));
         console.read();
         System.out.println("Quit.");
     }

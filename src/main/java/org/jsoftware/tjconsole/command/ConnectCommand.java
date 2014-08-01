@@ -1,7 +1,7 @@
 package org.jsoftware.tjconsole.command;
 
 import org.jsoftware.tjconsole.Output;
-import org.jsoftware.tjconsole.ProcessListManager;
+import org.jsoftware.tjconsole.local.*;
 import org.jsoftware.tjconsole.TJContext;
 import jline.Completor;
 
@@ -23,10 +23,9 @@ import java.util.prefs.Preferences;
  */
 public class ConnectCommand extends AbstractCommand implements Completor {
     private static final String PREFIX = "\\c";
-
     private final List<String> remoteConnectionHistory;
     private final Preferences prefs;
-    private final ProcessListManager processListManager = new ProcessListManager();
+
 
     public ConnectCommand(TJContext context, Output output) throws BackingStoreException {
         super(context, output);
@@ -47,7 +46,6 @@ public class ConnectCommand extends AbstractCommand implements Completor {
             try {
                 prefs.put("RNAME_" + (prefs.keys().length + 1), rName);
             } catch (BackingStoreException e) {
-                e.printStackTrace();
                 // TODO use logger to log it
             }
         }
@@ -75,12 +73,20 @@ public class ConnectCommand extends AbstractCommand implements Completor {
         boolean remote = false;
         output.outInfo("Connecting to " + url + "....\n");
         MBeanServerConnection serverConnection;
-        if (url.equalsIgnoreCase("local")) {
+        if (url.equalsIgnoreCase(ProcessListManagerLoader.LOCAL_PREFIX)) {
             serverConnection = ManagementFactory.getPlatformMBeanServer();
         } else {
             JMXServiceURL serviceURL;
-            if (processListManager.isLocalProcess(url)) {
-                serviceURL = processListManager.getLocalServiceURL(url);
+            if (ProcessListManagerLoader.isLocalProcess(url)) {
+                try {
+                    serviceURL = ProcessListManagerLoader.getProcessListManager().getLocalServiceURL(url);
+                } catch (LocalJvmAttachException e) {
+                    output.outError("Unable to connect to local JVM. Run jvm with -Dcom.sun.management.jmxremote");
+                    return;
+                } catch (ToolsNotAvailableException ex) {
+                    output.outError("Tools extension cannot be found. Unable to connect to local JVM. Enable remote JMX and connect to it remotely.");
+                    return;
+                }
             } else {
                 String port = "", host = "";
                 String[] urlParts = url.split(":", 2);
@@ -113,11 +119,17 @@ public class ConnectCommand extends AbstractCommand implements Completor {
     @SuppressWarnings("unchecked")
     public int complete(String buffer, int cursor, List candidates) {
         if (matches(buffer)) {
-            String urlprefix = extractURL(buffer);
+            String urlPrefix = extractURL(buffer);
             ArrayList<String> urlCandidate = new ArrayList<String>(remoteConnectionHistory);
-            urlCandidate.addAll(processListManager.getLocalProcesses());
+            try {
+                for(JvmPid jvm : ProcessListManagerLoader.getProcessListManager().getLocalProcessList()) {
+                    urlCandidate.add(ProcessListManagerLoader.LOCAL_PREFIX + " " + jvm.getFullName());
+                }
+            } catch (ToolsNotAvailableException e) {
+                // FIXME log info
+            }
             for (String s : urlCandidate) {
-                if (s.startsWith(urlprefix)) candidates.add(s);
+                if (s.startsWith(urlPrefix)) candidates.add(s);
             }
             return PREFIX.length();
         } else {
