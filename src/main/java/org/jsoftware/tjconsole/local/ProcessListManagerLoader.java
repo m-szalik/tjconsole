@@ -9,7 +9,7 @@ import com.sun.tools.attach.VirtualMachine;
  * @author szalik
  */
 public class ProcessListManagerLoader {
-    public static final String LOCAL_PREFIX = "LOCAL ";
+    public static final String LOCAL_PREFIX = "LOCAL:";
     private static ProcessListManager processListManager;
 
     public static boolean isToolsJarAvailable() {
