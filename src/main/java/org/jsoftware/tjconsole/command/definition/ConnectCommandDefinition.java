@@ -77,18 +77,15 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                 boolean remote = false;
                 output.outInfo("Connecting to " + url + "....\n");
                 MBeanServerConnection serverConnection;
-                if (url.equalsIgnoreCase(ProcessListManagerFactory.LOCAL_PREFIX)) {
+                if (url.equalsIgnoreCase(ProcessListManager.LOCAL_PREFIX)) {
                     serverConnection = ManagementFactory.getPlatformMBeanServer();
                 } else {
                     JMXServiceURL serviceURL;
-                    if (ProcessListManagerFactory.isLocalProcess(url)) {
+                    if (ProcessListManager.isLocalProcess(url)) {
                         try {
-                            serviceURL = ProcessListManagerFactory.getProcessListManager().getLocalServiceURL(url);
+                            serviceURL = new ProcessListManager().getLocalServiceURL(url);
                         } catch (LocalJvmAttachException e) {
-                            output.outError("Unable to connect to localjvm JVM. Run jvm with -Dcom.sun.management.jmxremote");
-                            return;
-                        } catch (ToolsNotAvailableException ex) {
-                            output.outError("Tools extension cannot be found. Unable to connect to localjvm JVM. Enable remote JMX and connect to it remotely.");
+                            output.outError("Unable to connect to local JVM. Run jvm with -Dcom.sun.management.jmxremote");
                             return;
                         }
                     } else {
@@ -133,18 +130,15 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
     }
 
     class ConnectCompleter implements Completer {
+        private final ProcessListManager processListManager = new ProcessListManager();
 
         @Override
         public int complete(String buffer, int cursor, List<CharSequence> candidates) {
             if (matches(buffer)) {
                 String urlPrefix = extractURL(buffer);
                 ArrayList<String> urlCandidate = new ArrayList<String>(remoteConnectionHistory);
-                try {
-                    for(JvmPid jvm : ProcessListManagerFactory.getProcessListManager().getLocalProcessList()) {
-                        urlCandidate.add(ProcessListManagerFactory.LOCAL_PREFIX + " " + jvm.getFullName());
-                    }
-                } catch (ToolsNotAvailableException e) {
-                    // FIXME log info
+                for(JvmPid jvm : processListManager.getLocalProcessList()) {
+                    urlCandidate.add(ProcessListManager.LOCAL_PREFIX + " " + jvm.getFullName());
                 }
                 for (String s : urlCandidate) {
                     if (s.startsWith(urlPrefix)) candidates.add(s);
