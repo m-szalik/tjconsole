@@ -1,4 +1,4 @@
-package org.jsoftware.tjconsole;
+package org.jsoftware.tjconsole.exception;
 
 public class EndOfInputException extends Exception {
     private final boolean printExitMessage;

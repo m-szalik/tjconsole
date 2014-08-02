@@ -7,6 +7,9 @@ import org.apache.commons.cli.*;
 import org.jsoftware.tjconsole.command.CmdDescription;
 import org.jsoftware.tjconsole.command.CommandAction;
 import org.jsoftware.tjconsole.command.definition.*;
+import org.jsoftware.tjconsole.exception.EndOfInputException;
+import org.jsoftware.tjconsole.exception.ParseInputCommandCreationException;
+import org.jsoftware.tjconsole.exception.ParseInputCommandNotFoundException;
 import org.jsoftware.tjconsole.util.MyDateConverter;
 
 import javax.management.ObjectName;
@@ -70,7 +73,7 @@ public class TJConsole {
     }
 
 
-    public void waitForCommands() throws IOException, EndOfInputException{
+    public void waitForCommands() throws IOException, EndOfInputException {
         while (true) {
             String line = reader.readLine();
             if (line == null) {
