@@ -27,7 +27,7 @@ public class EnvCommandDefinition extends AbstractCommandDefinition {
             @Override
             public void doAction(TJContext tjContext, Output output) {
                 tjContext.setEnvironmentVariable(attribute, valueStr);
-                output.outApp(attribute + '=' + valueStr);
+                output.println("@|yellow " +attribute + "@|white = @|yellow" + valueStr + "@|");
             }
         };
     }

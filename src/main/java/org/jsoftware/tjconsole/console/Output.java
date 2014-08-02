@@ -6,10 +6,12 @@ import org.jsoftware.tjconsole.TJContext;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.regex.Pattern;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
 public class Output implements AutoCloseable {
+    private final Pattern ansiRemovePattern = Pattern.compile("(@\\|\\w*)|(\\|@)");
     private final PrintStream out;
     private boolean useColors = true, ansiInstalled;
 
@@ -36,47 +38,23 @@ public class Output implements AutoCloseable {
     }
 
 
-    public void outInfo(String text) {
+    public void print(String text) {
         if (useColors) {
-            out.println(ansi().fg(Ansi.Color.WHITE).bold().a(text).reset());
+            out.print(ansi().render(text));
         } else {
-            out.println(text);
+            String s = ansiRemovePattern.matcher(text).replaceAll("");
+            out.print(s);
         }
         out.flush();
     }
 
 
-    public void outMBeanOutput(String text) {
-        if (useColors) {
-            out.println(ansi().fg(Ansi.Color.BLUE).a(text).reset());
-        } else {
-            out.println("INFO:  " + text);
-        }
-        out.flush();
-    }
-
-
-    public void outApp(String text) {
-        out.println(text);
-        out.flush();
-    }
-
-
-    public void outError(String text) {
-        if (useColors) {
-            out.println(ansi().fg(Ansi.Color.RED).a(text).reset());
-        } else {
-            out.println("ERROR: " + text);
-        }
-        out.flush();
-    }
-
-
-    public void outPrompt(String promptPattern, TJContext context) {
-        String prompt = promptPattern.replace("%b", context.getObjectName() == null ? "#none#" : context.getObjectName().toString());
+    public void println(String text) {
+        print(text);
         out.println();
-        out.print(prompt);
+        out.flush();
     }
+
 
 
     @Override
@@ -87,4 +65,11 @@ public class Output implements AutoCloseable {
         out.close();
     }
 
+    public void outError(String text) {
+        println("@|red " + text + "|@");
+    }
+
+    public void outInfo(String text) {
+        println("@|cyan " + text + "|@");
+    }
 }

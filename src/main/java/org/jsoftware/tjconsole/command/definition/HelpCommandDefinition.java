@@ -30,7 +30,7 @@ public class HelpCommandDefinition extends AbstractCommandDefinition {
             for (CmdDescription h : cmdDescriptions) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(h.getFull()).append(" - ").append(h.getDescription());
-                output.outApp(sb.toString());
+                output.println(sb.toString());
             }
             }
         };

@@ -33,7 +33,7 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                 for (MBeanOperationInfo oi : ctx.getServer().getMBeanInfo(ctx.getObjectName()).getOperations()) {
                     out.append(oi.getName()).append("\t operation returns:").append(oi.getReturnType()).append('\n'); // TODO
                 }
-                output.outMBeanOutput(out.toString());
+                output.println(out.toString());
             }
         };
 

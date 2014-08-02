@@ -68,7 +68,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                 String url = extractURL(input);
                 if (url.length() == 0) {
                     if (ctx.getServer() == null) {
-                        output.outInfo("Not connected.");
+                        output.outError("Not connected.");
                     } else {
                         output.outInfo("Connected to " + ctx.getServer().getDefaultDomain());
                     }

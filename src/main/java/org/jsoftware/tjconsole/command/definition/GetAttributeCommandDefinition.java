@@ -36,7 +36,7 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
                     DataOutputService.get(ai.getType()).output(value, sb);
                     sb.append('\n');
                 }
-                output.outMBeanOutput(sb.toString());
+                output.println(sb.toString());
             }
 
             private boolean skip(String aiName) {

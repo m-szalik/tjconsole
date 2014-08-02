@@ -41,7 +41,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
                         }
                         sb.append(")\n");
                     }
-                    output.outMBeanOutput(sb.toString());
+                    output.println(sb.toString());
                     return;
                 }
                 if (input.startsWith(PREFIX)) {
@@ -72,7 +72,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
                 sb.append("Method result:(" + operation.getReturnType() + ") ");
                 DataOutputService.get(operation.getReturnType()).output(returnValue, sb);
                 sb.append('\n');
-                output.outMBeanOutput(sb.toString());
+                output.println(sb.toString());
             }
         };
     }

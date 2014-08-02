@@ -1,6 +1,7 @@
 package org.jsoftware.tjconsole;
 
 import jline.console.ConsoleReader;
+import jline.console.completer.CandidateListCompletionHandler;
 import jline.console.completer.Completer;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.cli.*;
@@ -26,14 +27,18 @@ import java.util.prefs.BackingStoreException;
 public class TJConsole {
     private ConsoleReader reader = new ConsoleReader();
     private final TJContext context;
+    private final Properties properties;
     private Output output;
     private List<CommandDefinition> commandDefinitions;
-    private String promptPattern;
+
 
     private TJConsole(Properties props) throws IOException, BackingStoreException {
-        promptPattern = props.getProperty("prompt.pattern", "> ");
-        context = new TJContext();
-        commandDefinitions = new ArrayList<CommandDefinition>();
+        this.properties = props;
+        this.reader.setCompletionHandler(new CandidateListCompletionHandler() {
+
+        });
+        this.context = new TJContext();
+        this.commandDefinitions = new ArrayList<CommandDefinition>();
         List<CmdDescription> cmdDescriptions = new ArrayList<CmdDescription>();
         add(cmdDescriptions, new HelpCommandDefinition(cmdDescriptions));
         add(cmdDescriptions, new QuitCommandDefinition());
@@ -44,21 +49,13 @@ public class TJConsole {
         add(cmdDescriptions, new DescribeCommandDefinition());
         add(cmdDescriptions, new InvokeOperationCommandDefinition());
         add(cmdDescriptions, new EnvCommandDefinition());
-        for(CommandDefinition cd : commandDefinitions) {
-            Completer completer = cd.getCompleter(context);
+        for(CommandDefinition cd : this.commandDefinitions) {
+            Completer completer = cd.getCompleter(this.context);
             if (completer != null) {
-                reader.addCompleter(completer);
+                this.reader.addCompleter(completer);
             }
         }
-        updatePrompt();
-        try {
-            CommandDefinition cd = findCommandDefinition("use");
-            if (cd instanceof Observable) {
-                ((Observable) cd).addObserver(new UpdatePromptObserver());
-            }
-        } catch (Exception e) {
-            // FIXME
-        }
+
     }
 
 
@@ -164,7 +161,7 @@ public class TJConsole {
                 CommandLine cli;
                 try {
                     cli = parser.parse(options, args);
-                    boolean colors = ! cli.hasOption("script") && ! cli.hasOption("no-colors");
+                    boolean colors = ! cli.hasOption("script") && ! cli.hasOption("xterm");
                     consoleOutput = new Output(System.out, colors);
                     if (cli.hasOption("username")) {
                         actions.add(tjConsole.findCommandAction("set USERNAME " + cli.getOptionValue("username")));
@@ -207,7 +204,7 @@ public class TJConsole {
             // init
             tjConsole.output = consoleOutput;
             if (! scriptMode) {
-                System.err.println(props.getProperty("message.welcome", "Welcome to tJconsole"));
+                tjConsole.initInteractiveMode();
             }
             for(CommandAction action : actions) {
                 action.doAction(tjConsole.context, tjConsole.output);
@@ -217,13 +214,19 @@ public class TJConsole {
             }
         } catch(EndOfInputException ex) {
             if (! scriptMode && ex.isPrintExitMessage()) {
-                consoleOutput.outApp("\nBye.");
+                consoleOutput.println("\nBye.");
             }
         } finally {
             if (consoleOutput != null) {
                 consoleOutput.close();
+                tjConsole.reader.shutdown();
             }
         }
+    }
+
+    private void initInteractiveMode() {
+        output.println(properties.getProperty("message.welcome", "Welcome to tJconsole"));
+        reader.setPrompt(properties.getProperty("prompt.pattern", "> "));
     }
 
 
@@ -232,23 +235,6 @@ public class TJConsole {
         HelpFormatter helpFormatter = new HelpFormatter();
         helpFormatter.printHelp(out, 80, "tjconsole", "TJConsole - text jconsole.", options, 3, 2, "", false);
         out.flush();
-    }
-
-
-
-    class UpdatePromptObserver implements Observer {
-        @Override
-        public void update(Observable o, Object arg) {
-            if (o instanceof UseCommandDefinition) {
-                updatePrompt();
-            }
-        }
-    }
-
-    private void updatePrompt() {
-        ObjectName objectName = context.getObjectName();
-        String str = promptPattern.replace("%b", objectName == null ? "" : objectName.getCanonicalName());
-        reader.setPrompt(str);
     }
 
 }
