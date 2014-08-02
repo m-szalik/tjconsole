@@ -23,13 +23,12 @@ import java.util.prefs.Preferences;
  * @author szalik
  */
 public class ConnectCommandDefinition extends AbstractCommandDefinition {
-    private static final String PREFIX = "connect ";
     private final List<String> remoteConnectionHistory;
     private final Preferences prefs;
 
 
     public ConnectCommandDefinition() throws BackingStoreException {
-        super("Connect to mbean server.", "connect hostname:port or open local_vm_pid", "connect", false);
+        super("Connect to mbean server.", "connect <hostname>:<port> or <local jvm pid>", "connect", false);
         remoteConnectionHistory = new ArrayList<String>();
         prefs = Preferences.userNodeForPackage(getClass());
         for (String key : prefs.keys()) {
@@ -75,35 +74,30 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                     return;
                 }
                 boolean remote = false;
-                output.outInfo("Connecting to " + url + "....\n");
                 MBeanServerConnection serverConnection;
-                if (url.equalsIgnoreCase(ProcessListManager.LOCAL_PREFIX)) {
-                    serverConnection = ManagementFactory.getPlatformMBeanServer();
-                } else {
-                    JMXServiceURL serviceURL;
-                    if (ProcessListManager.isLocalProcess(url)) {
-                        try {
-                            serviceURL = new ProcessListManager().getLocalServiceURL(url);
-                        } catch (LocalJvmAttachException e) {
-                            output.outError("Unable to connect to local JVM. Run jvm with -Dcom.sun.management.jmxremote");
-                            return;
-                        }
-                    } else {
-                        String port = "", host = "";
-                        String[] urlParts = url.split(":", 2);
-                        host = urlParts[0];
-                        if (urlParts.length == 2) {
-                            port = urlParts[1];
-                        }
-                        serviceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi");
-                        remote = true;
+                JMXServiceURL serviceURL;
+                if (ProcessListManager.isLocalProcess(url)) {
+                    try {
+                        serviceURL = new ProcessListManager().getLocalServiceURL(url);
+                    } catch (LocalJvmAttachException e) {
+                        output.outError("Unable to connect to local JVM. Run jvm with -Dcom.sun.management.jmxremote");
+                        return;
                     }
-                    JMXConnector connector = JMXConnectorFactory.connect(serviceURL);
-                    serverConnection = connector.getMBeanServerConnection();
+                } else {
+                    String port = "", host = "";
+                    String[] urlParts = url.split(":", 2);
+                    host = urlParts[0];
+                    if (urlParts.length == 2) {
+                        port = urlParts[1];
+                    }
+                    serviceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi");
+                    remote = true;
                 }
+                JMXConnector connector = JMXConnectorFactory.connect(serviceURL);
+                serverConnection = connector.getMBeanServerConnection();
                 if (serverConnection != null) {
-                    output.outInfo("Connected to " + url + " - " + serverConnection.getDefaultDomain());
-                    ctx.setServer(serverConnection);
+                    output.outInfo("Connected to " + url + ". Default domain name is " + serverConnection.getDefaultDomain());
+                    ctx.setServer(serverConnection, url);
                     if (remote) {
                         addRemote(url, true);
                     }
@@ -121,12 +115,12 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
 
     @Override
     public boolean matches(String input) {
-        return input.startsWith(PREFIX);
+        return input.startsWith(prefix);
     }
 
 
-    private static String extractURL(String in) {
-        return in.substring(PREFIX.length()).trim();
+    private String extractURL(String in) {
+        return in.substring(prefix.length()).trim();
     }
 
     class ConnectCompleter implements Completer {
@@ -138,12 +132,12 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                 String urlPrefix = extractURL(buffer);
                 ArrayList<String> urlCandidate = new ArrayList<String>(remoteConnectionHistory);
                 for(JvmPid jvm : processListManager.getLocalProcessList()) {
-                    urlCandidate.add(ProcessListManager.LOCAL_PREFIX + " " + jvm.getFullName());
+                    urlCandidate.add(jvm.getFullName());
                 }
                 for (String s : urlCandidate) {
-                    if (s.startsWith(urlPrefix)) candidates.add(s);
+                    if (s.startsWith(urlPrefix)) candidates.add(" " + s);
                 }
-                return PREFIX.length();
+                return prefix.length();
             } else {
                 return -1;
             }

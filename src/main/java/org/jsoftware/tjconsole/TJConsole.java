@@ -40,7 +40,6 @@ public class TJConsole {
         this.context = new TJContext();
         this.commandDefinitions = new ArrayList<CommandDefinition>();
         List<CmdDescription> cmdDescriptions = new ArrayList<CmdDescription>();
-        add(cmdDescriptions, new HelpCommandDefinition(cmdDescriptions));
         add(cmdDescriptions, new QuitCommandDefinition());
         add(cmdDescriptions, new ConnectCommandDefinition());
         add(cmdDescriptions, new UseCommandDefinition());
@@ -49,6 +48,8 @@ public class TJConsole {
         add(cmdDescriptions, new DescribeCommandDefinition());
         add(cmdDescriptions, new InvokeOperationCommandDefinition());
         add(cmdDescriptions, new EnvCommandDefinition());
+        add(cmdDescriptions, new InfoCommandDefinition());
+        add(cmdDescriptions, new HelpCommandDefinition(cmdDescriptions));
         for(CommandDefinition cd : this.commandDefinitions) {
             Completer completer = cd.getCompleter(this.context);
             if (completer != null) {

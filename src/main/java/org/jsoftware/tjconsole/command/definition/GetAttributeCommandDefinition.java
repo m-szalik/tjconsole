@@ -7,7 +7,6 @@ import org.jsoftware.tjconsole.TJContext;
 import org.jsoftware.tjconsole.command.CommandAction;
 
 import javax.management.MBeanAttributeInfo;
-import java.util.List;
 
 /**
  * Command to get attribute value of mxBean
@@ -16,7 +15,7 @@ import java.util.List;
  */
 public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
     public GetAttributeCommandDefinition() {
-        super("Get attribute value", "get [attributeName]", "get", true);
+        super("Get attribute value", "get <attributeName>", "get", true);
     }
 
 
@@ -26,15 +25,14 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
         return new CommandAction() {
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new StringBuilder("@|yellow ");
                 for (MBeanAttributeInfo ai : ctx.getAttributes()) {
                     if (skip(ai.getName())) {
                         continue;
                     }
-                    sb.append(ai.getName()).append(" = ");
                     Object value = ctx.getServer().getAttribute(ctx.getObjectName(), ai.getName());
                     DataOutputService.get(ai.getType()).output(value, sb);
-                    sb.append('\n');
+                    sb.append(" |@");
                 }
                 output.println(sb.toString());
             }
@@ -55,24 +53,10 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
 
     @Override
     public Completer getCompleter(final TJContext ctx) {
-        return new Completer() {
+        return new AbstractAttributeCompleter(ctx, prefix, "") {
             @Override
-            public int complete(String buffer, int cursor, List<CharSequence> candidates) {
-                if (matches(buffer) && ctx.isBeanSelected()) {
-                    try {
-                        for (MBeanAttributeInfo ai : ctx.getAttributes()) {
-                            if (ai.isReadable()) {
-                                String s = prefix + ' ' + ai.getName();
-                                if (s.startsWith(buffer)) {
-                                    candidates.add(ai.getName());
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();    // FIXME
-                    }
-                }
-                return cursor;
+            protected boolean condition(MBeanAttributeInfo ai) {
+                return ai.isReadable();
             }
         };
     }

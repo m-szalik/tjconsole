@@ -2,7 +2,7 @@
 
 tools=$JAVA_HOME/lib/tools.jar
 if [ -f $tools ]; then
-	java -cp target/tjconsole-1.5-SNAPSHOT-all.jar:$tools org.jsoftware.tjconsole.TJConsole $*
+	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5002 -cp target/tjconsole-1.5-SNAPSHOT-all.jar:$tools org.jsoftware.tjconsole.TJConsole $*
 	exitCode=$?
 	echo Exit code $exitCode
 	exit $exitCode 

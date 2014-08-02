@@ -1,6 +1,8 @@
 package org.jsoftware.tjconsole;
 
 import jline.console.ConsoleReader;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.Converter;
 
 import javax.management.*;
 import java.io.IOException;
@@ -16,6 +18,7 @@ public class TJContext {
     private MBeanServerConnection serverConnection;
     private ObjectName objectName;
     private final Map<String, Object> environment;
+    private Object serverURL;
 
     public TJContext() {
         environment = new LinkedHashMap<String, Object>();
@@ -33,8 +36,11 @@ public class TJContext {
             throw new IllegalArgumentException("Invalid key - " + key);
         }
         Object old = environment.get(key);
-        if (!old.getClass().equals(value.getClass())) {
-            throw new IllegalArgumentException("Invalid value type - " + value.getClass().getName() + " should be " + old.getClass().getName());
+        if (! old.getClass().equals(value.getClass())) {
+            value = ConvertUtils.convert(value, old.getClass());
+            if (! old.getClass().equals(value.getClass())) {
+                throw new IllegalArgumentException("Invalid value type - " + value.getClass().getName() + " should be " + old.getClass().getName());
+            }
         }
         environment.put(key, value);
     }
@@ -43,8 +49,9 @@ public class TJContext {
         return serverConnection;
     }
 
-    public void setServer(MBeanServerConnection serverConnection) {
+    public void setServer(MBeanServerConnection serverConnection, String url) {
         this.serverConnection = serverConnection;
+        this.serverURL = url;
     }
 
     public ObjectName getObjectName() {
@@ -72,6 +79,9 @@ public class TJContext {
     }
 
 
+    public Object getServerURL() {
+        return serverURL;
+    }
 }
 
 

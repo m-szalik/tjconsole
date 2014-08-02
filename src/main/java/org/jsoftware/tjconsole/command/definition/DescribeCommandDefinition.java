@@ -17,7 +17,7 @@ import java.util.List;
 public class DescribeCommandDefinition extends AbstractCommandDefinition {
 
     public DescribeCommandDefinition() {
-        super("Get attributes and operations information.", "describe [attributeName]", "describe", true);
+        super("Describe attributes and operations of current bean.", "describe", "describe", true);
     }
 
 
@@ -39,25 +39,4 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
 
     }
 
-    @Override
-    public Completer getCompleter(final TJContext ctx) {
-        return new Completer() {
-            @Override
-            public int complete(String buffer, int cursor, List<CharSequence> candidates) {
-                if (matches(buffer) && ctx.isBeanSelected()) {
-                    try {
-                        for (MBeanAttributeInfo ai : ctx.getAttributes()) {
-                            candidates.add(ai.getName());
-                        }
-                        for (MBeanOperationInfo oi : ctx.getServer().getMBeanInfo(ctx.getObjectName()).getOperations()) {
-                            candidates.add(oi.getName());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();    // FIXME
-                    }
-                }
-                return cursor;
-            }
-        };
-    }
 }

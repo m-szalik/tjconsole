@@ -13,7 +13,7 @@ public class QuitCommandDefinition extends AbstractCommandDefinition {
 
 
     public QuitCommandDefinition() {
-        super("Quit.", "q", "quit", false);
+        super("Quit.", "q or quit", "quit", false);
     }
 
     @Override

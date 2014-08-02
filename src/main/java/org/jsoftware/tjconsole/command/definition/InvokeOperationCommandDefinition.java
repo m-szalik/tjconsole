@@ -17,10 +17,9 @@ import java.util.*;
  * @author szalik
  */
 public class InvokeOperationCommandDefinition extends AbstractCommandDefinition {
-    private static final String PREFIX = "invoke";
 
     public InvokeOperationCommandDefinition() {
-        super("Invoke operation.", "invoke", PREFIX, true);
+        super("Invoke operation.", "invoke", "invoke", true);
     }
 
 
@@ -31,7 +30,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {
                 String input = inputOrg;
-                if (input.trim().equalsIgnoreCase(PREFIX)) {
+                if (input.trim().equalsIgnoreCase(prefix)) {
                     StringBuilder sb = new StringBuilder();
                     for (MBeanOperationInfo oi : operations(ctx)) {
                         sb.append(oi.getName()).append('(');
@@ -44,8 +43,8 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
                     output.println(sb.toString());
                     return;
                 }
-                if (input.startsWith(PREFIX)) {
-                    input = input.substring(PREFIX.length()).trim();
+                if (input.startsWith(prefix)) {
+                    input = input.substring(prefix.length()).trim();
                 }
                 String methodName = input;
                 if (methodName.indexOf('(') > 0) {
@@ -125,7 +124,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
 
     @Override
     public final boolean matches(String input) {
-        if (input.startsWith(PREFIX)) return true;
+        if (input.startsWith(prefix)) return true;
         String s = input.trim();
         if (s.length() == 0) {
             return false;
@@ -142,32 +141,30 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
             @Override
             public int complete(String buffer, int cursor, List<CharSequence> candidates) {
                 buffer = buffer.trim();
-                if (!matches(buffer) && buffer.length() > 0) return -1;
-                int rt = -1;
-                if (buffer.startsWith(PREFIX)) {
-                    buffer = buffer.substring(PREFIX.length()).trim();
-                    rt = PREFIX.length();
+                if (buffer.startsWith(prefix)) {
+                    String name = buffer.substring(prefix.length()).trim();
                 }
-                ArrayList<String> myCandidates = new ArrayList<String>();
-                try {
-                    for (MBeanOperationInfo oi : operations(tjContext)) {
-                        if (!oi.getName().startsWith(buffer)) continue;
-                        StringBuilder mc = new StringBuilder(oi.getName());
-                        mc.append("(");
-                        for (int i = 0; i < oi.getSignature().length; i++) {
-                            mc.append(oi.getSignature()[i].getType());
-                            mc.append(" ");
-                            mc.append(oi.getSignature()[i].getName());
-                            if (i + 1 < oi.getSignature().length) mc.append(',');
-                        }
-                        mc.append(")");
-                        myCandidates.add(mc.toString());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace(); // FIXME
-                }
-                candidates.addAll(myCandidates);
-                return candidates.isEmpty() ? -1 : rt;
+//                ArrayList<String> myCandidates = new ArrayList<String>();
+//                try {
+//                    for (MBeanOperationInfo oi : operations(tjContext)) {
+//                        if (!oi.getName().startsWith(buffer)) continue;
+//                        StringBuilder mc = new StringBuilder(oi.getName());
+//                        mc.append("(");
+//                        for (int i = 0; i < oi.getSignature().length; i++) {
+//                            mc.append(oi.getSignature()[i].getType());
+//                            mc.append(" ");
+//                            mc.append(oi.getSignature()[i].getName());
+//                            if (i + 1 < oi.getSignature().length) mc.append(',');
+//                        }
+//                        mc.append(")");
+//                        myCandidates.add(mc.toString());
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace(); // FIXME
+//                }
+//                candidates.addAll(myCandidates);
+//                return candidates.isEmpty() ? -1 : rt;
+                return -1;
             }
         };
     }

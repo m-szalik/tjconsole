@@ -7,7 +7,6 @@ import org.jsoftware.tjconsole.command.CommandAction;
 
 import javax.management.Attribute;
 import javax.management.MBeanAttributeInfo;
-import java.util.List;
 
 /**
  * Operation to set mxBean attribute value
@@ -17,7 +16,7 @@ import java.util.List;
 public class SetAttributeCommandDefinition extends AbstractCommandDefinition {
 
     public SetAttributeCommandDefinition() {
-        super("Set attribute value.", "Set attributeName newValue", "set", true);
+        super("Set attribute value.", "set <attributeName> <newValue>", "set", true);
     }
 
 
@@ -53,21 +52,10 @@ public class SetAttributeCommandDefinition extends AbstractCommandDefinition {
 
     @Override
     public Completer getCompleter(final TJContext ctx) {
-        return new Completer() {
+        return new AbstractAttributeCompleter(ctx, prefix, " ") {
             @Override
-            public int complete(String buffer, int cursor, List<CharSequence> candidates) {
-                if (matches(buffer) && ctx.isBeanSelected()) {
-                    try {
-                        for (MBeanAttributeInfo ai : ctx.getAttributes()) {
-                            if (ai.isWritable()) {
-                                candidates.add(ai.getName() + "=");
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();    // FIXME
-                    }
-                }
-                return cursor;
+            protected boolean condition(MBeanAttributeInfo ai) {
+                return ai.isWritable();
             }
         };
     }

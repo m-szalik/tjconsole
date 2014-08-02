@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  */
 public class ProcessListManager {
     private final static Pattern SPLITTER = Pattern.compile("[:\\- ]");
-    public static final String LOCAL_PREFIX = "LOCAL";
+
 
     public ProcessListManager() {
     }
@@ -40,7 +40,7 @@ public class ProcessListManager {
      * @see #getLocalProcessList()
      */
     public JMXServiceURL getLocalServiceURL(String url) throws IOException, AgentLoadException, AgentInitializationException, LocalJvmAttachException {
-        String pid = url.trim().substring(LOCAL_PREFIX.length()).trim();
+        String pid = url.trim();
         Matcher matcher = SPLITTER.matcher(pid);
         if (matcher.find()) {
             int index = matcher.start();
@@ -64,6 +64,8 @@ public class ProcessListManager {
     }
 
     public static boolean isLocalProcess(String url) {
-        return url.startsWith(LOCAL_PREFIX);
+        String[] parts = url.trim().split(":", 2);
+        Pattern digits = Pattern.compile("\\d*");
+        return digits.matcher(parts[0]).matches() && (parts.length < 2 || ! digits.matcher(parts[1]).matches());
     }
 }

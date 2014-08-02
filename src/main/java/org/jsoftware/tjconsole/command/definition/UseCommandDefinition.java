@@ -20,7 +20,7 @@ import java.util.List;
 public class UseCommandDefinition extends AbstractCommandDefinition {
 
     public UseCommandDefinition() {
-        super("Select bean.", "use beanName", "use", false);
+        super("Select bean.", "use <beanName>", "use", false);
     }
 
 
@@ -37,10 +37,9 @@ public class UseCommandDefinition extends AbstractCommandDefinition {
                         output.outInfo(sb.toString());
                     }
                 } else {
-                    output.outInfo("Connecting to bean " + bName + "...");
                     ObjectName objectName = new ObjectName(bName);
                     if (ctx.getServer().isRegistered(objectName)) {
-                        output.outInfo("Connected to bean " + bName);
+                        output.outInfo("Attached to bean " + bName);
                         ctx.setObjectName(objectName);
                         notifyObservers(objectName);
                     } else {
@@ -65,7 +64,7 @@ public class UseCommandDefinition extends AbstractCommandDefinition {
                     try {
                         for (String s : names(ctx)) {
                             if (s.startsWith(urlPrefix)) {
-                                candidates.add(s);
+                                candidates.add(" " + s);
                             }
                         }
                     } catch (IOException e) { /* FIXME do not leave empty catch statements, at least log it using logger */ }

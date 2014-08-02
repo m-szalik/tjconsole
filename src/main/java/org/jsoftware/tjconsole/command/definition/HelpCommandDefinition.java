@@ -17,7 +17,7 @@ public class HelpCommandDefinition extends AbstractCommandDefinition {
     private final List<CmdDescription> cmdDescriptions;
 
     public HelpCommandDefinition(List<CmdDescription> cmdDescriptions) {
-        super("Print help", "h", "help", false);
+        super("Print help", "h or help", "help", false);
         this.cmdDescriptions = cmdDescriptions;
     }
 

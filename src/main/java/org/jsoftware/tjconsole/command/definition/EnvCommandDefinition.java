@@ -15,7 +15,7 @@ import java.util.List;
 public class EnvCommandDefinition extends AbstractCommandDefinition {
 
     public EnvCommandDefinition() {
-        super("Set environment variable like username or password", "env", "env", false);
+        super("Set environment variable like username or password", "env <variableName>=<newValue>", "env", false);
     }
 
 
@@ -39,11 +39,15 @@ public class EnvCommandDefinition extends AbstractCommandDefinition {
             @Override
             public int complete(String buffer, int cursor, List<CharSequence> candidates) {
                 if (matches(buffer)) {
+                    String namePrefix = buffer.substring(prefix.length()).trim();
                     for (String key : tjContext.getEnvironment().keySet()) {
-                        candidates.add(key + " ");
+                        if (key.startsWith(namePrefix)) {
+                            candidates.add(" " + key + "=");
+                        }
                     }
+                    return prefix.length();
                 }
-                return prefix.length() +1;
+                return -1;
             }
         };
     }
