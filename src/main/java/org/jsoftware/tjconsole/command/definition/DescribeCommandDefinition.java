@@ -7,6 +7,9 @@ import org.jsoftware.tjconsole.command.CommandAction;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanOperationInfo;
+import javax.management.MBeanParameterInfo;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,14 +29,33 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
         return new CommandAction() {
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {
-                StringBuilder out = new StringBuilder();
+                List<String> outList = new ArrayList<String>();
                 for (MBeanAttributeInfo ai : ctx.getAttributes()) {
-                    out.append(ai.getName()).append("\t attribute ").append(ai.isReadable() ? "R" : " ").append(ai.isWritable() ? "W" : " ").append(" ").append(ai.getType()).append('\n');
+                    outList.add("@|white " + ai.getName() + "|@\t" + (ai.isReadable() ? "R" : " ") + (ai.isWritable() ? "W" : " ") + "\t" + ai.getType());
                 }
                 for (MBeanOperationInfo oi : ctx.getServer().getMBeanInfo(ctx.getObjectName()).getOperations()) {
-                    out.append(oi.getName()).append("\t operation returns:").append(oi.getReturnType()).append('\n'); // TODO
+                    StringBuilder out = new StringBuilder();
+                    out.append("@|red ").append(oi.getName());
+                    MBeanParameterInfo[] parameters = oi.getSignature();
+                    if (parameters.length == 0) {
+                        out.append("()");
+                    } else {
+                        out.append("(|@");
+                        for(int i=0; i<parameters.length; i++) {
+                            out.append("@|blue ").append(parameters[i].getName()).append('(').append(parameters[i].getType()).append("|@");
+                            if (i +1 < parameters.length) {
+                                out.append(",");
+                            }
+                        }
+                        out.append("@|red )|@");
+                    }
+                    out.append("\treturns ").append(oi.getReturnType());
+                    outList.add(out.toString());
                 }
-                output.println(out.toString());
+                Collections.sort(outList);
+                for(String s : outList) {
+                    output.println(s);
+                }
             }
         };
 

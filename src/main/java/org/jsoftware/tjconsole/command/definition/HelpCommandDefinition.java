@@ -1,6 +1,7 @@
 package org.jsoftware.tjconsole.command.definition;
 
 import jline.console.completer.Completer;
+import org.fusesource.jansi.Ansi;
 import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.TJContext;
 import org.jsoftware.tjconsole.command.CmdDescription;
@@ -28,9 +29,7 @@ public class HelpCommandDefinition extends AbstractCommandDefinition {
             @Override
             public void doAction(TJContext tjContext, Output output) {
             for (CmdDescription h : cmdDescriptions) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(h.getFull()).append(" - ").append(h.getDescription());
-                output.println(sb.toString());
+                output.println("@|white " + h.getFull() + "|@\t@|yellow " + h.getDescription());
             }
             }
         };
