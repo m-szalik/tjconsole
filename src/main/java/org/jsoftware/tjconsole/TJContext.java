@@ -1,5 +1,7 @@
 package org.jsoftware.tjconsole;
 
+import jline.console.ConsoleReader;
+
 import javax.management.*;
 import java.io.IOException;
 import java.util.*;
@@ -64,4 +66,12 @@ public class TJContext {
         MBeanInfo beanInfo = serverConnection.getMBeanInfo(objectName);
         return Arrays.asList(beanInfo.getAttributes());
     }
+
+    public boolean isBeanSelected() {
+        return objectName != null;
+    }
+
+
 }
+
+

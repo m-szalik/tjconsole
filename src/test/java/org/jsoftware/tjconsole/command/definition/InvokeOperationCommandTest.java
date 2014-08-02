@@ -1,6 +1,7 @@
-package org.jsoftware.tjconsole.command;
+package org.jsoftware.tjconsole.command.definition;
 
-import org.jsoftware.tjconsole.command.cmd.InvokeOperationCommand;
+
+import org.jsoftware.tjconsole.command.definition.InvokeOperationCommandDefinition;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ public class InvokeOperationCommandTest {
     @Test
     public void testSplit1() {
         String input = "Abc, \"as,c\", \"as \", dd";
-        List<String> params = InvokeOperationCommand.mySplit(input);
+        List<String> params = InvokeOperationCommandDefinition.mySplit(input);
         Assert.assertEquals("Abc", params.get(0));
         Assert.assertEquals("as,c", params.get(1));
         Assert.assertEquals("as ", params.get(2));
