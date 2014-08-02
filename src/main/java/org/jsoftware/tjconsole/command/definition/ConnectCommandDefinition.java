@@ -77,13 +77,13 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                 boolean remote = false;
                 output.outInfo("Connecting to " + url + "....\n");
                 MBeanServerConnection serverConnection;
-                if (url.equalsIgnoreCase(ProcessListManagerLoader.LOCAL_PREFIX)) {
+                if (url.equalsIgnoreCase(ProcessListManagerFactory.LOCAL_PREFIX)) {
                     serverConnection = ManagementFactory.getPlatformMBeanServer();
                 } else {
                     JMXServiceURL serviceURL;
-                    if (ProcessListManagerLoader.isLocalProcess(url)) {
+                    if (ProcessListManagerFactory.isLocalProcess(url)) {
                         try {
-                            serviceURL = ProcessListManagerLoader.getProcessListManager().getLocalServiceURL(url);
+                            serviceURL = ProcessListManagerFactory.getProcessListManager().getLocalServiceURL(url);
                         } catch (LocalJvmAttachException e) {
                             output.outError("Unable to connect to localjvm JVM. Run jvm with -Dcom.sun.management.jmxremote");
                             return;
@@ -140,8 +140,8 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                 String urlPrefix = extractURL(buffer);
                 ArrayList<String> urlCandidate = new ArrayList<String>(remoteConnectionHistory);
                 try {
-                    for(JvmPid jvm : ProcessListManagerLoader.getProcessListManager().getLocalProcessList()) {
-                        urlCandidate.add(ProcessListManagerLoader.LOCAL_PREFIX + " " + jvm.getFullName());
+                    for(JvmPid jvm : ProcessListManagerFactory.getProcessListManager().getLocalProcessList()) {
+                        urlCandidate.add(ProcessListManagerFactory.LOCAL_PREFIX + " " + jvm.getFullName());
                     }
                 } catch (ToolsNotAvailableException e) {
                     // FIXME log info

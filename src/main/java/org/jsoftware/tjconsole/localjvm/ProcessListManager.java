@@ -39,7 +39,7 @@ public class ProcessListManager {
      * @see #getLocalProcessList()
      */
     public JMXServiceURL getLocalServiceURL(String url) throws IOException, AgentLoadException, AgentInitializationException, LocalJvmAttachException {
-        String pid = url.trim().substring(ProcessListManagerLoader.LOCAL_PREFIX.length()).trim();
+        String pid = url.trim().substring(ProcessListManagerFactory.LOCAL_PREFIX.length()).trim();
         Matcher matcher = SPLITTER.matcher(pid);
         if (matcher.find()) {
             int index = matcher.start();

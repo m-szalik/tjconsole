@@ -2,11 +2,11 @@ package org.jsoftware.tjconsole.localjvm;
 
 /**
  * Check if tools.jar is available
- * Receive localjvm java PIDs
+ * Receive local jvm java PIDs
  * Try to load agent for JMX
  * @author szalik
  */
-public class ProcessListManagerLoader {
+public class ProcessListManagerFactory {
     public static final String LOCAL_PREFIX = "LOCAL:";
     private static ProcessListManager processListManager;
 
@@ -23,7 +23,7 @@ public class ProcessListManagerLoader {
         if (! isToolsJarAvailable()) {
             throw new ToolsNotAvailableException();
         }
-        synchronized (ProcessListManagerLoader.class) {
+        synchronized (ProcessListManagerFactory.class) {
             if (processListManager == null) {
                 processListManager = new ProcessListManager();
             }
@@ -33,7 +33,7 @@ public class ProcessListManagerLoader {
 
     /**
      * @param url url to check
-     * @return true if url string is localjvm process url
+     * @return true if url string is local jvm process url
      */
     public static boolean isLocalProcess(String url) {
         return url.startsWith(LOCAL_PREFIX);
