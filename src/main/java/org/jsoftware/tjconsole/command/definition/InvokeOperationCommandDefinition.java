@@ -2,11 +2,9 @@ package org.jsoftware.tjconsole.command.definition;
 
 import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.DataOutputService;
-import org.jsoftware.tjconsole.Output;
+import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.TJContext;
-import org.jsoftware.tjconsole.command.CmdDescription;
 import org.jsoftware.tjconsole.command.CommandAction;
-import org.jsoftware.tjconsole.util.MyDateConverter;
 import org.apache.commons.beanutils.ConvertUtils;
 
 import javax.management.MBeanOperationInfo;

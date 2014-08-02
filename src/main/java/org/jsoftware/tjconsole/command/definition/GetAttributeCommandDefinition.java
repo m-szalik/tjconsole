@@ -2,18 +2,11 @@ package org.jsoftware.tjconsole.command.definition;
 
 import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.DataOutputService;
-import org.jsoftware.tjconsole.Output;
+import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.TJContext;
-import org.jsoftware.tjconsole.command.CmdDescription;
 import org.jsoftware.tjconsole.command.CommandAction;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.IntrospectionException;
 import javax.management.MBeanAttributeInfo;
-import javax.management.ReflectionException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**

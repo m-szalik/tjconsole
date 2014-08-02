@@ -1,8 +1,7 @@
 package org.jsoftware.tjconsole.command.definition;
 
 import jline.console.completer.Completer;
-import org.jsoftware.tjconsole.Output;
-import org.jsoftware.tjconsole.command.CmdDescription;
+import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.command.CommandAction;
 import org.jsoftware.tjconsole.localjvm.*;
 import org.jsoftware.tjconsole.TJContext;
@@ -11,7 +10,6 @@ import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;

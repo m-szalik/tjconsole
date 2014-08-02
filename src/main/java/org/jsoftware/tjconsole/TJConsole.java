@@ -7,9 +7,10 @@ import org.apache.commons.cli.*;
 import org.jsoftware.tjconsole.command.CmdDescription;
 import org.jsoftware.tjconsole.command.CommandAction;
 import org.jsoftware.tjconsole.command.definition.*;
-import org.jsoftware.tjconsole.exception.EndOfInputException;
-import org.jsoftware.tjconsole.exception.ParseInputCommandCreationException;
-import org.jsoftware.tjconsole.exception.ParseInputCommandNotFoundException;
+import org.jsoftware.tjconsole.console.Output;
+import org.jsoftware.tjconsole.console.EndOfInputException;
+import org.jsoftware.tjconsole.console.ParseInputCommandCreationException;
+import org.jsoftware.tjconsole.console.ParseInputCommandNotFoundException;
 import org.jsoftware.tjconsole.util.MyDateConverter;
 
 import javax.management.ObjectName;

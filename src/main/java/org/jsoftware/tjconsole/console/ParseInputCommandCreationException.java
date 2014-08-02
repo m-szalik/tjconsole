@@ -1,4 +1,4 @@
-package org.jsoftware.tjconsole.exception;
+package org.jsoftware.tjconsole.console;
 
 public class ParseInputCommandCreationException extends ParseInputException {
 

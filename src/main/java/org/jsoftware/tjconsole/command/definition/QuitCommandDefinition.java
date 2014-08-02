@@ -1,9 +1,7 @@
 package org.jsoftware.tjconsole.command.definition;
 
-import org.jsoftware.tjconsole.Output;
-import org.jsoftware.tjconsole.TJConsole;
+import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.TJContext;
-import org.jsoftware.tjconsole.command.CmdDescription;
 import org.jsoftware.tjconsole.command.CommandAction;
 
 /**

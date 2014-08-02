@@ -1,7 +1,8 @@
-package org.jsoftware.tjconsole;
+package org.jsoftware.tjconsole.console;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
+import org.jsoftware.tjconsole.TJContext;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
