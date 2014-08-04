@@ -30,7 +30,12 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
             public void doAction(TJContext ctx, Output output) throws Exception {
                 List<String> outList = new ArrayList<String>();
                 for (MBeanAttributeInfo ai : ctx.getAttributes()) {
-                    outList.add("@|white " + ai.getName() + "|@\t" + (ai.isReadable() ? "R" : " ") + (ai.isWritable() ? "W" : " ") + "\t" + ai.getType());
+                    StringBuilder sb = new StringBuilder("@|cyan ").append(ai.getName()).append(" |@");
+                    for(int i=ai.getName().length(); i<10; i++) {
+                        sb.append(' ');
+                    }
+                    sb.append(" ").append((ai.isReadable() ? "R" : " ") + (ai.isWritable() ? "W" : " ")).append("  ").append(ai.getType());
+                    outList.add(sb.toString());
                 }
                 for (MBeanOperationInfo oi : ctx.getServer().getMBeanInfo(ctx.getObjectName()).getOperations()) {
                     StringBuilder out = new StringBuilder();
@@ -48,7 +53,7 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                         }
                         out.append("@|red )|@");
                     }
-                    out.append("\treturns ").append(oi.getReturnType());
+                    out.append("  returns ").append(oi.getReturnType());
                     outList.add(out.toString());
                 }
                 Collections.sort(outList);
