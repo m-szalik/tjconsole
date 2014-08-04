@@ -58,6 +58,7 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                 }
                 Collections.sort(outList);
                 for(String s : outList) {
+                    System.err.println(s);
                     output.println(s);
                 }
             }
