@@ -8,14 +8,15 @@ import org.apache.commons.cli.*;
 import org.jsoftware.tjconsole.command.CmdDescription;
 import org.jsoftware.tjconsole.command.CommandAction;
 import org.jsoftware.tjconsole.command.definition.*;
-import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.console.EndOfInputException;
+import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.console.ParseInputCommandCreationException;
 import org.jsoftware.tjconsole.console.ParseInputCommandNotFoundException;
 import org.jsoftware.tjconsole.util.MyDateConverter;
 
-import javax.management.ObjectName;
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.prefs.BackingStoreException;
 
@@ -78,17 +79,21 @@ public class TJConsole {
             if (line == null) {
                 throw new EndOfInputException(true);
             }
+            CommandAction action = null;
             try {
-                CommandAction action = findCommandAction(line.trim());
+                action = findCommandAction(line.trim());
                 if (action != null) {
                     action.doAction(context, output);
                 }
             } catch (ParseInputCommandNotFoundException ex) {
                 output.outError("Command not found");
+                context.fail(action, 2);
             } catch (ParseInputCommandCreationException ex) {
                 output.outError("Cannot parse " + ex.getInput());
+                context.fail(action, 3);
             } catch (Exception ex) { // command execution problem
                 output.outError(ex.getLocalizedMessage());
+                context.fail(action, 99);
                 ex.printStackTrace(); // FIXME remove
             }
         }
@@ -208,7 +213,12 @@ public class TJConsole {
                 tjConsole.initInteractiveMode();
             }
             for(CommandAction action : actions) {
-                action.doAction(tjConsole.context, tjConsole.output);
+                try {
+                    action.doAction(tjConsole.context, tjConsole.output);
+                } catch (Exception ex) {
+                    tjConsole.context.fail(action, 99);
+                    throw ex;
+                }
             }
             if (! scriptMode) {
                 tjConsole.waitForCommands();
@@ -223,6 +233,8 @@ public class TJConsole {
                 tjConsole.reader.shutdown();
             }
         }
+        int exitCode = tjConsole.context.getExitCode();
+        System.exit(exitCode);
     }
 
     private void initInteractiveMode() {

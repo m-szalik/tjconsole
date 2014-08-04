@@ -37,9 +37,11 @@ public class SetAttributeCommandDefinition extends AbstractCommandDefinition {
                 }
                 if (attr == null) {
                     output.outError("No attribute found '" + attribute + "'");
+                    ctx.fail(this, 30);
                 } else {
                     if (!attr.isWritable()) {
                         output.outError("Attribute " + attribute + " is read only");
+                        ctx.fail(this, 31);
                         return;
                     }
                     Object val = getValueAsType(valueStr, attr.getType());

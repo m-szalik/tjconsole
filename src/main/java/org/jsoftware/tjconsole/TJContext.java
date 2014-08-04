@@ -1,8 +1,7 @@
 package org.jsoftware.tjconsole;
 
-import jline.console.ConsoleReader;
 import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
+import org.jsoftware.tjconsole.command.CommandAction;
 
 import javax.management.*;
 import java.io.IOException;
@@ -19,6 +18,7 @@ public class TJContext {
     private ObjectName objectName;
     private final Map<String, Object> environment;
     private Object serverURL;
+    private int exitCode = 0;
 
     public TJContext() {
         environment = new LinkedHashMap<String, Object>();
@@ -81,6 +81,16 @@ public class TJContext {
 
     public Object getServerURL() {
         return serverURL;
+    }
+
+    public void fail(CommandAction action, int code) {
+        if (exitCode == 0) {
+            exitCode = code;
+        }
+    }
+
+    public int getExitCode() {
+        return exitCode;
     }
 }
 

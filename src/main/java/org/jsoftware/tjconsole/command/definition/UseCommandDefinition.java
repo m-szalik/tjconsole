@@ -44,6 +44,7 @@ public class UseCommandDefinition extends AbstractCommandDefinition {
                         notifyObservers(objectName);
                     } else {
                         output.outError("Bean " + bName + " not found.");
+                        ctx.fail(this, 15);
                         ctx.setObjectName(null);
                         notifyObservers(null);
                     }

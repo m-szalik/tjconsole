@@ -1,16 +1,15 @@
 package org.jsoftware.tjconsole.console;
 
-import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
-import org.jsoftware.tjconsole.TJContext;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.regex.Pattern;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
-public class Output implements AutoCloseable {
+public class Output implements Closeable {
     private final Pattern ansiRemovePattern = Pattern.compile("(@\\|\\w*)|(\\|@)");
     private final PrintStream out;
     private boolean useColors = true, ansiInstalled;
@@ -58,7 +57,7 @@ public class Output implements AutoCloseable {
 
 
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
         if (ansiInstalled) {
             AnsiConsole.systemUninstall();
         }

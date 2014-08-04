@@ -1,16 +1,17 @@
 package org.jsoftware.tjconsole.command.definition;
 
 import jline.console.completer.Completer;
-import org.jsoftware.tjconsole.console.Output;
-import org.jsoftware.tjconsole.command.CommandAction;
-import org.jsoftware.tjconsole.localjvm.*;
 import org.jsoftware.tjconsole.TJContext;
+import org.jsoftware.tjconsole.command.CommandAction;
+import org.jsoftware.tjconsole.console.Output;
+import org.jsoftware.tjconsole.localjvm.JvmPid;
+import org.jsoftware.tjconsole.localjvm.LocalJvmAttachException;
+import org.jsoftware.tjconsole.localjvm.ProcessListManager;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
 
 
     public ConnectCommandDefinition() throws BackingStoreException {
-        super("Connect to mbean server.", "connect <hostname>:<port> or <local jvm pid>", "connect", false);
+        super("Connect to mBean server.", "connect <hostname>:<port> or <local jvm pid>", "connect", false);
         remoteConnectionHistory = new ArrayList<String>();
         prefs = Preferences.userNodeForPackage(getClass());
         for (String key : prefs.keys()) {
@@ -68,6 +69,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                 if (url.length() == 0) {
                     if (ctx.getServer() == null) {
                         output.outError("Not connected.");
+                        ctx.fail(this, 10);
                     } else {
                         output.outInfo("Connected to " + ctx.getServer().getDefaultDomain());
                     }
@@ -81,6 +83,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                         serviceURL = new ProcessListManager().getLocalServiceURL(url);
                     } catch (LocalJvmAttachException e) {
                         output.outError("Unable to connect to local JVM. Run jvm with -Dcom.sun.management.jmxremote");
+                        ctx.fail(this, 10);
                         return;
                     }
                 } else {

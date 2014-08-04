@@ -2,11 +2,14 @@ package org.jsoftware.tjconsole.command.definition;
 
 import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.DataOutputService;
-import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.TJContext;
 import org.jsoftware.tjconsole.command.CommandAction;
+import org.jsoftware.tjconsole.console.Output;
 
 import javax.management.MBeanAttributeInfo;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Command to get attribute value of mxBean
@@ -21,24 +24,29 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
 
     @Override
     public CommandAction action(String input) throws Exception {
-        final String[] attributes = input.substring(prefix.length()).trim().split("[ ,]");
+        final List<String> attributes = new ArrayList<String>(Arrays.asList(input.substring(prefix.length()).trim().split("[ ,]")));
         return new CommandAction() {
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {
-                StringBuilder sb = new StringBuilder("@|yellow ");
+                StringBuilder sb = new StringBuilder();
                 for (MBeanAttributeInfo ai : ctx.getAttributes()) {
                     if (skip(ai.getName())) {
                         continue;
                     }
+                    sb.append("@|cyan ").append(ai.getName()).append("|@ = @|yellow ");
                     Object value = ctx.getServer().getAttribute(ctx.getObjectName(), ai.getName());
                     DataOutputService.get(ai.getType()).output(value, sb);
                     sb.append(" |@");
+                    output.println(sb.toString());
+                    attributes.remove(ai.getName());
                 }
-                output.println(sb.toString());
+                if (!attributes.isEmpty()) {
+                    ctx.fail(this, 20);
+                }
             }
 
             private boolean skip(String aiName) {
-                if (attributes.length == 0) {
+                if (attributes.size() == 0) {
                     return false;
                 }
                 for(String a : attributes) {

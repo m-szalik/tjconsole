@@ -57,8 +57,9 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
                         it.remove();
                     }
                 }
-                if (list.size() != 1)
+                if (list.size() != 1) {
                     throw new IllegalArgumentException("Operations " + list + " for methodName=" + methodName);
+                }
                 MBeanOperationInfo operation = list.get(0);
                 Object[] params = new Object[operation.getSignature().length];
                 String[] signature = new String[operation.getSignature().length];
