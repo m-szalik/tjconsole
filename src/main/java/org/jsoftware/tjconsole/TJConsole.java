@@ -96,7 +96,6 @@ public class TJConsole {
             } catch (Exception ex) { // command execution problem
                 output.outError(ex.getLocalizedMessage());
                 context.fail(action, 99);
-                ex.printStackTrace(); // FIXME remove
             }
         }
     }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Select mxBean to connect to.
@@ -18,6 +19,7 @@ import java.util.List;
  * @author szalik
  */
 public class UseCommandDefinition extends AbstractCommandDefinition {
+    private Logger logger = Logger.getLogger(getClass().getName());
 
     public UseCommandDefinition() {
         super("Select bean.", "use <beanName>", "use", false);
@@ -68,7 +70,9 @@ public class UseCommandDefinition extends AbstractCommandDefinition {
                                 candidates.add(" " + s);
                             }
                         }
-                    } catch (IOException e) { /* FIXME do not leave empty catch statements, at least log it using logger */ }
+                    } catch (IOException e) {
+                        logger.throwing(getClass().getName(), "complete - Error receiving bean names from JMX Server", e);
+                    }
                     return prefix.length();
                 } else {
                     return -1;

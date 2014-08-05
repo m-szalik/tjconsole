@@ -15,6 +15,7 @@ import javax.management.remote.JMXServiceURL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -24,6 +25,7 @@ import java.util.prefs.Preferences;
  * @author szalik
  */
 public class ConnectCommandDefinition extends AbstractCommandDefinition {
+    private final Logger logger = Logger.getLogger(getClass().getName());
     private final List<String> remoteConnectionHistory;
     private final Preferences prefs;
 
@@ -47,7 +49,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
             try {
                 prefs.put("RNAME_" + (prefs.keys().length + 1), rName);
             } catch (BackingStoreException e) {
-                // TODO use logger to log it
+                logger.throwing(getClass().getName(), "addRemote - Error saving data to user preferences", e);
             }
         }
     }

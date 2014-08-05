@@ -10,6 +10,7 @@ import org.apache.commons.beanutils.ConvertUtils;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Invoke operation - mxBean method - command
@@ -136,6 +137,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
     @Override
     public Completer getCompleter(final TJContext tjContext) {
         return new Completer() {
+            private final Logger logger = Logger.getLogger(getClass().getName());
             @Override
             public int complete(String buffer, int cursor, List<CharSequence> candidates) {
                 buffer = buffer.trim();
@@ -158,7 +160,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
 //                        myCandidates.add(mc.toString());
 //                    }
 //                } catch (Exception e) {
-//                    e.printStackTrace(); // FIXME
+//                    logger.throwing(getClass().getName(), "complete - Error receiving bean names from JMX Server", e);
 //                }
 //                candidates.addAll(myCandidates);
 //                return candidates.isEmpty() ? -1 : rt;

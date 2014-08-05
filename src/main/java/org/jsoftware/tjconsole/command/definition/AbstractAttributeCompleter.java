@@ -5,8 +5,10 @@ import org.jsoftware.tjconsole.TJContext;
 
 import javax.management.MBeanAttributeInfo;
 import java.util.List;
+import java.util.logging.Logger;
 
 abstract class AbstractAttributeCompleter implements Completer {
+    private final Logger logger = Logger.getLogger(getClass().getName());
     private final TJContext ctx;
     private final String prefix;
     private final String appendTo;
@@ -28,7 +30,7 @@ abstract class AbstractAttributeCompleter implements Completer {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();    // FIXME
+                logger.throwing(getClass().getName(), "complete -  Error receiving attribute names from JMX Server", e);
                 return -1;
             }
             return prefix.length();
