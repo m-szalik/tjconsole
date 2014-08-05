@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import static org.fusesource.jansi.Ansi.ansi;
 
 public class Output implements Closeable {
-    private final Pattern ansiRemovePattern = Pattern.compile("(@\\|\\w*)|(\\|@)");
+    private final Pattern ansiRemovePattern = Pattern.compile("(@\\|\\w* )|( ?\\|@)");
     private final PrintStream out;
     private boolean useColors = true, ansiInstalled;
 
