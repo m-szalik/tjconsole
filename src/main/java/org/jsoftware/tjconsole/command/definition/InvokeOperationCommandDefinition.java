@@ -70,9 +70,9 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
                 }
                 Object returnValue = ctx.getServer().invoke(ctx.getObjectName(), operation.getName(), params, signature);
                 StringBuilder sb = new StringBuilder();
-                sb.append("Method result:(").append(operation.getReturnType()).append(") ");
+                sb.append("@|red Method result:(").append(operation.getReturnType()).append(") |@ @|yellow ");
                 DataOutputService.get(operation.getReturnType()).output(returnValue, sb);
-                sb.append('\n');
+                sb.append(" |@");
                 output.println(sb.toString());
             }
         };
@@ -82,10 +82,11 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
     private Object getParameter(String input, int index, MBeanParameterInfo beanParameterInfo) throws ClassNotFoundException {
         int i1 = input.indexOf('(');
         int i2 = input.lastIndexOf(')');
-        String s = input.substring(i1, i2);
+        String s = input.substring(i1+1, i2);
         List<String> params = mySplit(s);
         Class<?> clazz = Class.forName(beanParameterInfo.getType());
-        return ConvertUtils.convert(params.get(index), clazz);
+        String pv = params.get(index).trim();
+        return ConvertUtils.convert(pv, clazz);
     }
 
 
@@ -141,30 +142,31 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
             @Override
             public int complete(String buffer, int cursor, List<CharSequence> candidates) {
                 buffer = buffer.trim();
+                ArrayList<String> myCandidates = new ArrayList<String>();
                 if (buffer.startsWith(prefix)) {
                     String name = buffer.substring(prefix.length()).trim();
+                    try {
+                        for (MBeanOperationInfo oi : operations(tjContext)) {
+                            if (!oi.getName().startsWith(name)) {
+                                continue;
+                            }
+                            StringBuilder mc = new StringBuilder(" ").append(oi.getName());
+                            mc.append("(");
+                            for (int i = 0; i < oi.getSignature().length; i++) {
+                                mc.append(oi.getSignature()[i].getType());
+                                mc.append(" ");
+                                mc.append(oi.getSignature()[i].getName());
+                                if (i + 1 < oi.getSignature().length) mc.append(',');
+                            }
+                            mc.append(")");
+                            myCandidates.add(mc.toString());
+                        }
+                    } catch (Exception e) {
+                        logger.throwing(getClass().getName(), "complete - Error receiving bean names from JMX Server", e);
+                    }
+                    candidates.addAll(myCandidates);
                 }
-//                ArrayList<String> myCandidates = new ArrayList<String>();
-//                try {
-//                    for (MBeanOperationInfo oi : operations(tjContext)) {
-//                        if (!oi.getName().startsWith(buffer)) continue;
-//                        StringBuilder mc = new StringBuilder(oi.getName());
-//                        mc.append("(");
-//                        for (int i = 0; i < oi.getSignature().length; i++) {
-//                            mc.append(oi.getSignature()[i].getType());
-//                            mc.append(" ");
-//                            mc.append(oi.getSignature()[i].getName());
-//                            if (i + 1 < oi.getSignature().length) mc.append(',');
-//                        }
-//                        mc.append(")");
-//                        myCandidates.add(mc.toString());
-//                    }
-//                } catch (Exception e) {
-//                    logger.throwing(getClass().getName(), "complete - Error receiving bean names from JMX Server", e);
-//                }
-//                candidates.addAll(myCandidates);
-//                return candidates.isEmpty() ? -1 : rt;
-                return -1;
+                return myCandidates.isEmpty() ? -1 : prefix.length();
             }
         };
     }

@@ -37,6 +37,8 @@ class ToStringDataOutputService extends DataOutputService {
     public void output(Object data, Appendable output) throws IOException {
         if (data == null) {
             output.append("null");
+        } else if ("".equals(data.toString())) {
+            output.equals("<empty string>");
         } else {
             output.append(data.toString());
         }
