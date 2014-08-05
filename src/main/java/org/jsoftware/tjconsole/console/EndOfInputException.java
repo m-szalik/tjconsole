@@ -1,13 +1,7 @@
 package org.jsoftware.tjconsole.console;
 
 public class EndOfInputException extends Exception {
-    private final boolean printExitMessage;
-
-    public EndOfInputException(boolean printExitMessage) {
-        this.printExitMessage = printExitMessage;
+    public EndOfInputException() {
     }
-
-    public boolean isPrintExitMessage() {
-        return printExitMessage;
-    }
+    
 }

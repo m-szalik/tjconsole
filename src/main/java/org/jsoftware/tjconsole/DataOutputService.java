@@ -72,7 +72,7 @@ class ArrayDataOutputService extends DataOutputService {
         output.append("Array[\n");
         for (int i = 0; i < Array.getLength(data); i++) {
             Object o = Array.get(data, i);
-            output.append("index:" + i).append(" = ");
+            output.append("index:").append(String.valueOf(i)).append(" = ");
             get(o.getClass().getName()).output(o, output);
             output.append('\n');
         }

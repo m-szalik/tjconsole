@@ -9,7 +9,7 @@ import java.util.Observable;
 /**
  * @author szalik
  */
-public abstract class AbstractCommandDefinition extends Observable implements CommandDefinition {
+abstract class AbstractCommandDefinition extends Observable implements CommandDefinition {
     private final CmdDescription description;
     protected final String prefix;
 

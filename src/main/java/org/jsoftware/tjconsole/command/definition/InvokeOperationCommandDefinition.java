@@ -69,7 +69,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
                 }
                 Object returnValue = ctx.getServer().invoke(ctx.getObjectName(), operation.getName(), params, signature);
                 StringBuilder sb = new StringBuilder();
-                sb.append("Method result:(" + operation.getReturnType() + ") ");
+                sb.append("Method result:(").append(operation.getReturnType()).append(") ");
                 DataOutputService.get(operation.getReturnType()).output(returnValue, sb);
                 sb.append('\n');
                 output.println(sb.toString());
@@ -130,10 +130,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
         if (s.length() == 0) {
             return false;
         }
-        if (s.indexOf("(") > 0) {
-            return true;
-        }
-        return false;
+        return s.indexOf("(") > 0;
     }
 
     @Override
@@ -175,9 +172,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
     private List<MBeanOperationInfo> operations(TJContext ctx) throws Exception {
         if (ctx.isConnected() && ctx.getObjectName() != null) {
             ArrayList<MBeanOperationInfo> list = new ArrayList<MBeanOperationInfo>();
-            for (MBeanOperationInfo oi : ctx.getServer().getMBeanInfo(ctx.getObjectName()).getOperations()) {
-                list.add(oi);
-            }
+            Collections.addAll(list, ctx.getServer().getMBeanInfo(ctx.getObjectName()).getOperations());
             return list;
         } else {
             return Collections.emptyList();

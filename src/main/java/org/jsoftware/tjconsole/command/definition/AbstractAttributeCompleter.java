@@ -6,7 +6,7 @@ import org.jsoftware.tjconsole.TJContext;
 import javax.management.MBeanAttributeInfo;
 import java.util.List;
 
-public abstract class AbstractAttributeCompleter implements Completer {
+abstract class AbstractAttributeCompleter implements Completer {
     private final TJContext ctx;
     private final String prefix;
     private final String appendTo;
@@ -24,7 +24,7 @@ public abstract class AbstractAttributeCompleter implements Completer {
             try {
                 for (MBeanAttributeInfo ai : ctx.getAttributes()) {
                     if (condition(ai) && ai.getName().startsWith(namePrefix)) {
-                        candidates.add(" " + ai.getName());
+                        candidates.add(" " + ai.getName() + appendTo);
                     }
                 }
             } catch (Exception e) {

@@ -74,10 +74,12 @@ public class TJConsole {
 
 
     public void waitForCommands() throws IOException, EndOfInputException {
-        while (true) {
+        boolean stop = false;
+        while (! stop) {
             String line = reader.readLine();
             if (line == null) {
-                throw new EndOfInputException(true);
+                stop = true;
+                throw new EndOfInputException();
             }
             CommandAction action = null;
             try {
@@ -224,7 +226,7 @@ public class TJConsole {
                 tjConsole.waitForCommands();
             }
         } catch(EndOfInputException ex) {
-            if (! scriptMode && ex.isPrintExitMessage()) {
+            if (! scriptMode) {
                 consoleOutput.println("\nBye.");
             }
         } finally {
