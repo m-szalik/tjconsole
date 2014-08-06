@@ -1,7 +1,7 @@
 package org.jsoftware.tjconsole.command;
 
-import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.TJContext;
+import org.jsoftware.tjconsole.console.Output;
 
 /**
  * @author szalik

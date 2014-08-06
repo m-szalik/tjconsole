@@ -1,9 +1,9 @@
 package org.jsoftware.tjconsole.command.definition;
 
 import jline.console.completer.Completer;
-import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.TJContext;
 import org.jsoftware.tjconsole.command.CommandAction;
+import org.jsoftware.tjconsole.console.Output;
 
 import java.util.List;
 

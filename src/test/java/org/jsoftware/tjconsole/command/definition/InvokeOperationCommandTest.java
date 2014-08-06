@@ -1,7 +1,6 @@
 package org.jsoftware.tjconsole.command.definition;
 
 
-import org.jsoftware.tjconsole.command.definition.InvokeOperationCommandDefinition;
 import org.junit.Assert;
 import org.junit.Test;
 

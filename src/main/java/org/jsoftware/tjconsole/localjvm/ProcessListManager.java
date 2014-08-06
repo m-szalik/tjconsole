@@ -2,11 +2,13 @@ package org.jsoftware.tjconsole.localjvm;
 
 import com.sun.tools.attach.*;
 
-import java.io.File;
-import java.util.*;
-
 import javax.management.remote.JMXServiceURL;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

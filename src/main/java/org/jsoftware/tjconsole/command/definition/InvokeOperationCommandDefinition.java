@@ -1,15 +1,18 @@
 package org.jsoftware.tjconsole.command.definition;
 
 import jline.console.completer.Completer;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.jsoftware.tjconsole.DataOutputService;
-import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.TJContext;
 import org.jsoftware.tjconsole.command.CommandAction;
-import org.apache.commons.beanutils.ConvertUtils;
+import org.jsoftware.tjconsole.console.Output;
 
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -82,7 +85,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
     private Object getParameter(String input, int index, MBeanParameterInfo beanParameterInfo) throws ClassNotFoundException {
         int i1 = input.indexOf('(');
         int i2 = input.lastIndexOf(')');
-        String s = input.substring(i1+1, i2);
+        String s = input.substring(i1 + 1, i2);
         List<String> params = mySplit(s);
         Class<?> clazz = Class.forName(beanParameterInfo.getType());
         String pv = params.get(index).trim();

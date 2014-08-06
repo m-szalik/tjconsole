@@ -1,13 +1,11 @@
 package org.jsoftware.tjconsole.console;
 
-import org.jsoftware.tjconsole.DataOutputService;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.io.StringWriter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class OutputTest {
 
