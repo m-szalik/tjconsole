@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
  *
  * @author szalik
  */
+@SuppressWarnings({"unchecked", "unsafe"})
 public class MyDateConverter implements Converter {
     private static MyDateConverter instance;
     private final Map<Pattern, DateFormat> patterns;
@@ -37,7 +38,6 @@ public class MyDateConverter implements Converter {
     }
 
 
-    @SuppressWarnings({"unchecked", "unsafe"})
     public Object convert(Class clazz, Object value) {
         if (value == null) {
             return null;

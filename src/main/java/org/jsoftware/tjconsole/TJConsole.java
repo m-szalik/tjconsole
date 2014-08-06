@@ -91,7 +91,7 @@ public class TJConsole {
         while (true) {
             String line = reader.readLine();
             if (line == null) {
-                throw new EndOfInputException();
+                break;
             }
             CommandAction action = null;
             try {
@@ -110,6 +110,7 @@ public class TJConsole {
                 context.fail(action, 99);
             }
         }
+        throw new EndOfInputException();
     }
 
 
