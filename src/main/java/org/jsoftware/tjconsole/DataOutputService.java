@@ -40,6 +40,8 @@ class ToStringDataOutputService extends DataOutputService {
     public void output(Object data, TJContext tjContext, Appendable output) throws IOException {
         if (data == null) {
             output.append("null");
+        } else if ("".equals(data.toString())) {
+            output.equals("<empty string>");
         } else {
             output.append(data.toString());
         }
@@ -75,8 +77,8 @@ class ArrayDataOutputService extends DataOutputService {
         output.append("Array[\n");
         for (int i = 0; i < Array.getLength(data); i++) {
             Object o = Array.get(data, i);
-            output.append("index:" + i).append(" = ");
-            get(o.getClass().getName()).output(o, tjContext, output);
+            output.append("index:").append(String.valueOf(i)).append(" = ");
+            get(o.getClass().getName()).output(o, output);
             output.append('\n');
         }
         output.append("]\n");

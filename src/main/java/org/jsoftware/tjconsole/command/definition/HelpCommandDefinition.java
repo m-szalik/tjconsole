@@ -28,7 +28,12 @@ public class HelpCommandDefinition extends AbstractCommandDefinition {
             @Override
             public void doAction(TJContext tjContext, Output output) {
             for (CmdDescription h : cmdDescriptions) {
-                output.println("@|white " + h.getFull() + "|@\t@|yellow " + h.getDescription());
+                StringBuilder sb = new StringBuilder("@|white ").append(h.getFull()).append(" |@").append("  ");
+                while (sb.length() < 30) {
+                    sb.append(' ');
+                }
+                sb.append("@|blue ").append(h.getDescription()).append(" |@");
+                output.println(sb.toString());
             }
             }
         };

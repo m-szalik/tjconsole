@@ -9,6 +9,7 @@ import org.jsoftware.tjconsole.console.Output;
 import javax.management.MBeanAttributeInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,14 +26,19 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
     @Override
     public CommandAction action(String input) throws Exception {
         final List<String> attributes = new ArrayList<String>(Arrays.asList(input.substring(prefix.length()).trim().split("[ ,]")));
+        for(Iterator<String> it = attributes.iterator(); it.hasNext();) {
+            if (it.next().trim().length() == 0) {
+                it.remove();
+            }
+        }
         return new CommandAction() {
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {
-                StringBuilder sb = new StringBuilder();
                 for (MBeanAttributeInfo ai : ctx.getAttributes()) {
                     if (skip(ai.getName())) {
                         continue;
                     }
+                    StringBuilder sb = new StringBuilder();
                     sb.append("@|cyan ").append(ai.getName()).append("|@ = @|yellow ");
                     Object value = ctx.getServer().getAttribute(ctx.getObjectName(), ai.getName());
                     DataOutputService.get(ai.getType()).output(value, ctx, sb);
@@ -40,7 +46,8 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
                     output.println(sb.toString());
                     attributes.remove(ai.getName());
                 }
-                if (!attributes.isEmpty()) {
+                if (! attributes.isEmpty()) {
+                    output.outError("Cannot find attributes: " + attributes);
                     ctx.fail(this, 20);
                 }
             }

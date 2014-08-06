@@ -10,6 +10,7 @@ import org.apache.commons.beanutils.ConvertUtils;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Invoke operation - mxBean method - command
@@ -69,9 +70,9 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
                 }
                 Object returnValue = ctx.getServer().invoke(ctx.getObjectName(), operation.getName(), params, signature);
                 StringBuilder sb = new StringBuilder();
-                sb.append("Method result:(" + operation.getReturnType() + ") ");
-                DataOutputService.get(operation.getReturnType()).output(returnValue, ctx, sb);
-                sb.append('\n');
+                sb.append("@|red Method result:(").append(operation.getReturnType()).append(") |@ @|yellow ");
+                DataOutputService.get(operation.getReturnType()).output(returnValue, sb);
+                sb.append(" |@");
                 output.println(sb.toString());
             }
         };
@@ -81,10 +82,11 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
     private Object getParameter(String input, int index, MBeanParameterInfo beanParameterInfo) throws ClassNotFoundException {
         int i1 = input.indexOf('(');
         int i2 = input.lastIndexOf(')');
-        String s = input.substring(i1, i2);
+        String s = input.substring(i1+1, i2);
         List<String> params = mySplit(s);
         Class<?> clazz = Class.forName(beanParameterInfo.getType());
-        return ConvertUtils.convert(params.get(index), clazz);
+        String pv = params.get(index).trim();
+        return ConvertUtils.convert(pv, clazz);
     }
 
 
@@ -130,42 +132,41 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
         if (s.length() == 0) {
             return false;
         }
-        if (s.indexOf("(") > 0) {
-            return true;
-        }
-        return false;
+        return s.indexOf("(") > 0;
     }
 
     @Override
     public Completer getCompleter(final TJContext tjContext) {
         return new Completer() {
+            private final Logger logger = Logger.getLogger(getClass().getName());
             @Override
             public int complete(String buffer, int cursor, List<CharSequence> candidates) {
                 buffer = buffer.trim();
+                ArrayList<String> myCandidates = new ArrayList<String>();
                 if (buffer.startsWith(prefix)) {
                     String name = buffer.substring(prefix.length()).trim();
+                    try {
+                        for (MBeanOperationInfo oi : operations(tjContext)) {
+                            if (!oi.getName().startsWith(name)) {
+                                continue;
+                            }
+                            StringBuilder mc = new StringBuilder(" ").append(oi.getName());
+                            mc.append("(");
+                            for (int i = 0; i < oi.getSignature().length; i++) {
+                                mc.append(oi.getSignature()[i].getType());
+                                mc.append(" ");
+                                mc.append(oi.getSignature()[i].getName());
+                                if (i + 1 < oi.getSignature().length) mc.append(',');
+                            }
+                            mc.append(")");
+                            myCandidates.add(mc.toString());
+                        }
+                    } catch (Exception e) {
+                        logger.throwing(getClass().getName(), "complete - Error receiving bean names from JMX Server", e);
+                    }
+                    candidates.addAll(myCandidates);
                 }
-//                ArrayList<String> myCandidates = new ArrayList<String>();
-//                try {
-//                    for (MBeanOperationInfo oi : operations(tjContext)) {
-//                        if (!oi.getName().startsWith(buffer)) continue;
-//                        StringBuilder mc = new StringBuilder(oi.getName());
-//                        mc.append("(");
-//                        for (int i = 0; i < oi.getSignature().length; i++) {
-//                            mc.append(oi.getSignature()[i].getType());
-//                            mc.append(" ");
-//                            mc.append(oi.getSignature()[i].getName());
-//                            if (i + 1 < oi.getSignature().length) mc.append(',');
-//                        }
-//                        mc.append(")");
-//                        myCandidates.add(mc.toString());
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace(); // FIXME
-//                }
-//                candidates.addAll(myCandidates);
-//                return candidates.isEmpty() ? -1 : rt;
-                return -1;
+                return myCandidates.isEmpty() ? -1 : prefix.length();
             }
         };
     }
@@ -175,9 +176,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
     private List<MBeanOperationInfo> operations(TJContext ctx) throws Exception {
         if (ctx.isConnected() && ctx.getObjectName() != null) {
             ArrayList<MBeanOperationInfo> list = new ArrayList<MBeanOperationInfo>();
-            for (MBeanOperationInfo oi : ctx.getServer().getMBeanInfo(ctx.getObjectName()).getOperations()) {
-                list.add(oi);
-            }
+            Collections.addAll(list, ctx.getServer().getMBeanInfo(ctx.getObjectName()).getOperations());
             return list;
         } else {
             return Collections.emptyList();

@@ -90,10 +90,12 @@ public class TJConsole {
 
 
     public void waitForCommands() throws IOException, EndOfInputException {
-        while (true) {
+        boolean stop = false;
+        while (! stop) {
             String line = reader.readLine();
             if (line == null) {
-                throw new EndOfInputException(true);
+                stop = true;
+                throw new EndOfInputException();
             }
             CommandAction action = null;
             try {
@@ -110,7 +112,6 @@ public class TJConsole {
             } catch (Exception ex) { // command execution problem
                 output.outError(ex.getLocalizedMessage());
                 context.fail(action, 99);
-                ex.printStackTrace(); // FIXME remove
             }
         }
     }
@@ -165,7 +166,7 @@ public class TJConsole {
         options.addOption(OptionBuilder.withDescription("Connect to mBean server. (example --connect <jvm_pid> --connect <host>:<port>").hasArgs(1).create("connect"));
         options.addOption(OptionBuilder.withDescription("Use mBean.").withArgName("beanName").hasArgs(1).create("use"));
         options.addOption(OptionBuilder.withDescription("Use mBean.").withArgName("beanName").hasArgs(1).create("bean"));
-        options.addOption(OptionBuilder.withDescription("Run script (javaScript or groovy) from file.").withArgName("file").hasArgs(1).create("script"));
+        // not supported yet //options.addOption(OptionBuilder.withDescription("Run script (javaScript or groovy) from file.").withArgName("file").hasArgs(1).create("script"));
         options.addOption(OptionBuilder.withDescription("Show local jvm java processes list and exit.").create("ps"));
         options.addOption(OptionBuilder.withDescription("Do not use colors for output.").create("xterm"));
         options.addOption(OptionBuilder.withDescription("Jmx authentication username").withArgName("username").hasArgs(1).create("username"));
@@ -240,7 +241,7 @@ public class TJConsole {
                 tjConsole.waitForCommands();
             }
         } catch(EndOfInputException ex) {
-            if (! scriptMode && ex.isPrintExitMessage()) {
+            if (! scriptMode) {
                 consoleOutput.println("\nBye.");
             }
         } finally {
