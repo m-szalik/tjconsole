@@ -41,7 +41,7 @@ class ToStringDataOutputService extends DataOutputService {
         if (data == null) {
             output.append("null");
         } else if ("".equals(data.toString())) {
-            output.equals("<empty string>");
+            output.append("<empty string>");
         } else {
             output.append(data.toString());
         }

@@ -2,6 +2,7 @@ package org.jsoftware.tjconsole.command.definition;
 
 import org.jsoftware.tjconsole.TJContext;
 import org.jsoftware.tjconsole.command.CommandAction;
+import org.jsoftware.tjconsole.console.EndOfInputException;
 import org.jsoftware.tjconsole.console.Output;
 
 /**
@@ -21,7 +22,7 @@ public class QuitCommandDefinition extends AbstractCommandDefinition {
         return new CommandAction() {
             @Override
             public void doAction(TJContext tjContext, Output output) throws Exception {
-                System.exit(0);
+                throw new EndOfInputException(); // it's not good for flow control, but....
             }
         };
     }

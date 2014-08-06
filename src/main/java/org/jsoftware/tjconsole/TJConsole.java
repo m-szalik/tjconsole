@@ -14,9 +14,7 @@ import org.jsoftware.tjconsole.console.ParseInputCommandCreationException;
 import org.jsoftware.tjconsole.console.ParseInputCommandNotFoundException;
 import org.jsoftware.tjconsole.util.MyDateConverter;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.prefs.BackingStoreException;
@@ -90,11 +88,9 @@ public class TJConsole {
 
 
     public void waitForCommands() throws IOException, EndOfInputException {
-        boolean stop = false;
-        while (! stop) {
+        while (true) {
             String line = reader.readLine();
             if (line == null) {
-                stop = true;
                 throw new EndOfInputException();
             }
             CommandAction action = null;
@@ -261,10 +257,14 @@ public class TJConsole {
 
 
     private static void printHelp(Options options, PrintStream outStream) {
-        PrintWriter out = new PrintWriter(outStream);
-        HelpFormatter helpFormatter = new HelpFormatter();
-        helpFormatter.printHelp(out, 80, "tjconsole", "TJConsole - text jconsole.", options, 3, 2, "", false);
-        out.flush();
+        try {
+            PrintWriter out = new PrintWriter(new OutputStreamWriter(outStream, "UTF-8"));
+            HelpFormatter helpFormatter = new HelpFormatter();
+            helpFormatter.printHelp(out, 80, "tjconsole", "TJConsole - text jconsole.", options, 3, 2, "", false);
+            out.flush();
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError(e);
+        }
     }
 
 }
