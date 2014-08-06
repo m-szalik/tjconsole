@@ -21,13 +21,18 @@ public class EnvCommandDefinition extends AbstractCommandDefinition {
 
     public CommandAction action(String input) throws Exception {
         String[] data = input.substring(prefix.length()).trim().split("=", 2);
-        final String attribute = data[0].trim();
+        final String key = data[0].trim();
         final String valueStr = data[1].trim();
         return new CommandAction() {
             @Override
             public void doAction(TJContext tjContext, Output output) {
-            tjContext.setEnvironmentVariable(attribute, valueStr);
-            output.println("@|yellow " +attribute + "|@ = @|yellow " + valueStr + "@|");
+                try {
+                    tjContext.setEnvironmentVariable(key, valueStr, true);
+                    output.println("@|red " + key + "|@ = " + valueStr);
+                } catch (IllegalArgumentException ex) {
+                    tjContext.fail(this, 60);
+                    output.outError("Cannot update " + key + " - " + ex.getLocalizedMessage());
+                }
             }
         };
     }

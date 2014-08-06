@@ -20,12 +20,13 @@ public class InfoCommandDefinition extends AbstractCommandDefinition {
         return new CommandAction() {
             @Override
             public void doAction(TJContext tjContext, Output output) {
-                add(output, "Server", tjContext.getServerURL());
-                add(output, "Bean", tjContext.getObjectName());
+                add(output, "CURRENT JMX SERVER", tjContext.getServerURL());
+                add(output, "CURRENT JMX BEAN", tjContext.getObjectName());
                 add(output, "SSL", tjContext.getEnvironment().get("SSL"));
-                add(output, "Username", tjContext.getEnvironment().get("USERNAME"));
+                add(output, "USERNAME", tjContext.getEnvironment().get("USERNAME"));
                 Object password = tjContext.getEnvironment().get("PASSWORD");
-                add(output, "Password", password != null && password.toString().trim().length() > 0 ? "***" : null);
+                add(output, "PASSWORD", password != null && password.toString().trim().length() > 0 ? "***" : null);
+                add(output, "DATE_FORMAT", tjContext.getEnvironment().get("DATE_FORMAT"));
             }
 
             private void add(Output output, String name, Object value) {

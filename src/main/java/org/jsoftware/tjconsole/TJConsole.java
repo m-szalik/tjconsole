@@ -17,6 +17,7 @@ import org.jsoftware.tjconsole.util.MyDateConverter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.prefs.BackingStoreException;
 
@@ -39,6 +40,21 @@ public class TJConsole {
 
         });
         this.context = new TJContext();
+        this.context.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                UpdateEnvironmentEvent event = (UpdateEnvironmentEvent) arg;
+                if (event.getKey().equals("DATE_FORMAT")) {
+                    String df = (String) event.getCurrent();
+                    SimpleDateFormat sdf = new SimpleDateFormat(df);
+                    MyDateConverter.getInstance().setCustom(sdf);
+                }
+            }
+        });
+        this.context.setEnvironmentVariable("SSL", Boolean.FALSE, false);
+        this.context.setEnvironmentVariable("USERNAME", "", false);
+        this.context.setEnvironmentVariable("PASSWORD", "", false);
+        this.context.setEnvironmentVariable("DATE_FORMAT", "yyyy-MM-dd'T'HH:mm:ss", false);
         this.commandDefinitions = new ArrayList<CommandDefinition>();
         List<CmdDescription> cmdDescriptions = new ArrayList<CmdDescription>();
         add(cmdDescriptions, new QuitCommandDefinition());
@@ -141,7 +157,7 @@ public class TJConsole {
     @SuppressWarnings("static-access")
     public static void main(String[] args) throws Exception {
         ConvertUtils.deregister(Date.class);
-        ConvertUtils.register(new MyDateConverter(), Date.class);
+        ConvertUtils.register(MyDateConverter.getInstance(), Date.class);
         Properties props = new Properties();
         props.load(TJConsole.class.getResourceAsStream("/tjconsole.properties"));
         Options options = new Options();

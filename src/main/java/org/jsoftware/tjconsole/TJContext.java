@@ -13,7 +13,7 @@ import java.util.*;
  *
  * @author szalik
  */
-public class TJContext {
+public class TJContext extends Observable {
     private MBeanServerConnection serverConnection;
     private ObjectName objectName;
     private final Map<String, Object> environment;
@@ -22,26 +22,30 @@ public class TJContext {
 
     public TJContext() {
         environment = new LinkedHashMap<String, Object>();
-        environment.put("SSL", Boolean.FALSE);
-        environment.put("USERNAME", "");
-        environment.put("PASSWORD", "");
     }
 
     public Map<String, Object> getEnvironment() {
         return Collections.unmodifiableMap(environment);
     }
 
-    public void setEnvironmentVariable(String key, Object value) {
-        if (!environment.containsKey(key)) {
-            throw new IllegalArgumentException("Invalid key - " + key);
-        }
-        Object old = environment.get(key);
-        if (! old.getClass().equals(value.getClass())) {
-            value = ConvertUtils.convert(value, old.getClass());
-            if (! old.getClass().equals(value.getClass())) {
-                throw new IllegalArgumentException("Invalid value type - " + value.getClass().getName() + " should be " + old.getClass().getName());
+    public void setEnvironmentVariable(String key, Object value, boolean check) {
+        if (check) {
+            if (!environment.containsKey(key)) {
+                throw new IllegalArgumentException("Invalid key - " + key);
+            }
+            Object old = environment.get(key);
+            if (!old.getClass().equals(value.getClass())) {
+                value = ConvertUtils.convert(value, old.getClass());
+                if (!old.getClass().equals(value.getClass())) {
+                    throw new IllegalArgumentException("Invalid value type - " + value.getClass().getName() + " should be " + old.getClass().getName());
+                }
             }
         }
+        Object prev = environment.get(key);
+        if ((value != null && ! value.equals(prev)) || (value == null && prev != null)) {
+            setChanged();
+        }
+        notifyObservers(new UpdateEnvironmentEvent(key, prev, value));
         environment.put(key, value);
     }
 
