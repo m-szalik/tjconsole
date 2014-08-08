@@ -73,7 +73,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
                 }
                 Object returnValue = ctx.getServer().invoke(ctx.getObjectName(), operation.getName(), params, signature);
                 StringBuilder sb = new StringBuilder();
-                sb.append("@|red Method result:(").append(operation.getReturnType()).append(") |@ @|yellow ");
+                sb.append("@|green Method result:(").append(operation.getReturnType()).append(") |@ @|yellow ");
                 DataOutputService.get(operation.getReturnType()).output(returnValue, ctx, sb);
                 sb.append(" |@");
                 output.println(sb.toString());

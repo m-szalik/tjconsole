@@ -31,7 +31,7 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                 List<String> outList = new ArrayList<String>();
                 for (MBeanAttributeInfo ai : ctx.getAttributes()) {
                     StringBuilder sb = new StringBuilder("@|cyan ").append(ai.getName()).append(" |@");
-                    for(int i=ai.getName().length(); i<18; i++) {
+                    for(int i=ai.getName().length(); i<32; i++) {
                         sb.append(' ');
                     }
                     sb.append(" ").append((ai.isReadable() ? "R" : " ") + (ai.isWritable() ? "W" : " ")).append("  ").append(ai.getType());
@@ -39,10 +39,10 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                 }
                 for (MBeanOperationInfo oi : ctx.getServer().getMBeanInfo(ctx.getObjectName()).getOperations()) {
                     StringBuilder out = new StringBuilder();
-                    out.append("@|red ").append(oi.getName());
+                    out.append("@|green ").append(oi.getName());
                     MBeanParameterInfo[] parameters = oi.getSignature();
                     if (parameters.length == 0) {
-                        out.append("()");
+                        out.append("()|@");
                     } else {
                         out.append("(|@");
                         for(int i=0; i<parameters.length; i++) {
@@ -51,7 +51,7 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                                 out.append(",");
                             }
                         }
-                        out.append("@|red )|@");
+                        out.append("@|green )|@");
                     }
                     out.append("  ").append(oi.getReturnType());
                     outList.add(out.toString());
