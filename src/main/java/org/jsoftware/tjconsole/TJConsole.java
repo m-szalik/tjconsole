@@ -1,7 +1,6 @@
 package org.jsoftware.tjconsole;
 
 import jline.console.ConsoleReader;
-import jline.console.completer.CandidateListCompletionHandler;
 import jline.console.completer.Completer;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.cli.*;
@@ -34,9 +33,6 @@ public class TJConsole {
 
     private TJConsole(Properties props) throws IOException, BackingStoreException {
         this.properties = props;
-        this.reader.setCompletionHandler(new CandidateListCompletionHandler() {
-
-        });
         this.context = new TJContext();
         this.context.addObserver(new Observer() {
             @Override
@@ -50,6 +46,8 @@ public class TJConsole {
             }
         });
         this.context.setEnvironmentVariable("DATE_FORMAT", "yyyy-MM-dd'T'HH:mm:ss", false);
+        envToSystemProperty(this.context, "javax.net.ssl.trustStorePassword", "TRUST_STORE_PASSWORD", null);
+        envToSystemProperty(this.context, "javax.net.ssl.trustStore", "TRUST_STORE", System.getProperty("user.home") + File.separator + ".trustStore");
         this.commandDefinitions = new ArrayList<CommandDefinition>();
         List<CmdDescription> cmdDescriptions = new ArrayList<CmdDescription>();
         add(cmdDescriptions, new QuitCommandDefinition());
@@ -69,6 +67,24 @@ public class TJConsole {
             }
         }
 
+    }
+
+    private void envToSystemProperty(TJContext context, final String systemProperty, final String envKey, String defaultValue) {
+        String sysProp = System.getProperty(systemProperty);
+        if (sysProp == null) {
+            System.setProperty(systemProperty, defaultValue);
+            sysProp = defaultValue;
+        }
+        context.setEnvironmentVariable(envKey, sysProp, false);
+        context.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                UpdateEnvironmentEvent event = (UpdateEnvironmentEvent) arg;
+                if (event.getKey().equals(envKey)) {
+                    System.setProperty(systemProperty, event.getCurrent().toString());
+                }
+            }
+        });
     }
 
 
