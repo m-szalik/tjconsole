@@ -49,9 +49,6 @@ public class TJConsole {
                 }
             }
         });
-        this.context.setEnvironmentVariable("SSL", Boolean.FALSE, false);
-        this.context.setEnvironmentVariable("USERNAME", "", false);
-        this.context.setEnvironmentVariable("PASSWORD", "", false);
         this.context.setEnvironmentVariable("DATE_FORMAT", "yyyy-MM-dd'T'HH:mm:ss", false);
         this.commandDefinitions = new ArrayList<CommandDefinition>();
         List<CmdDescription> cmdDescriptions = new ArrayList<CmdDescription>();

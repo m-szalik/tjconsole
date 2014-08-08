@@ -56,6 +56,7 @@ public class TJContext extends Observable {
     public void setServer(MBeanServerConnection serverConnection, String url) {
         this.serverConnection = serverConnection;
         this.serverURL = url;
+        this.objectName = null;
     }
 
     public ObjectName getObjectName() {

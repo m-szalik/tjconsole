@@ -4,6 +4,7 @@ import jline.console.completer.Completer;
 import org.jsoftware.tjconsole.TJContext;
 import org.jsoftware.tjconsole.command.CommandAction;
 import org.jsoftware.tjconsole.console.Output;
+import org.jsoftware.tjconsole.console.ParseInputCommandCreationException;
 import org.jsoftware.tjconsole.localjvm.JvmPid;
 import org.jsoftware.tjconsole.localjvm.LocalJvmAttachException;
 import org.jsoftware.tjconsole.localjvm.ProcessListManager;
@@ -13,6 +14,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -31,7 +33,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
 
 
     public ConnectCommandDefinition() throws BackingStoreException {
-        super("Connect to mBean server.", "connect <hostname>:<port> or <local jvm pid>", "connect", false);
+        super("Connect to mBean server.", "connect <host>:<port> or <user>:<password>@<host>:<port> or <local jvm pid>", "connect", false);
         remoteConnectionHistory = new ArrayList<String>();
         prefs = Preferences.userNodeForPackage(getClass());
         for (String key : prefs.keys()) {
@@ -59,25 +61,18 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
         return new CommandAction() {
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {
-                Map<String, Object> env = ctx.getEnvironment();
-                if (env.get("SSL").equals(Boolean.TRUE)) {
-                    throw new IllegalArgumentException("SSL not supported.");
-                }
-                if (env.get("USERNAME").toString().length() + env.get("PASSWORD").toString().length() > 0) {
-                    throw new IllegalArgumentException("USER/PASS not supported.");
-                }
-
-                String url = extractURL(input);
-                if (url.length() == 0) {
+                final String url = extractURL(input);
+                Map<String,Object> env = null;
+                if (url.length() == 0) {  // current state
                     if (ctx.getServer() == null) {
-                        output.outError("Not connected.");
+                        output.outError("Not connected to any JMX server.");
                         ctx.fail(this, 10);
                     } else {
                         output.outInfo("Connected to " + ctx.getServer().getDefaultDomain());
                     }
                     return;
                 }
-                boolean remote = false;
+                boolean saveURL = false;
                 MBeanServerConnection serverConnection;
                 JMXServiceURL serviceURL;
                 if (ProcessListManager.isLocalProcess(url)) {
@@ -89,21 +84,48 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                         return;
                     }
                 } else {
+                    String hostPort;
+                    int lm = url.lastIndexOf('@');
+                    if (lm > 0) { // user and password
+                        hostPort = url.substring(lm +1);
+                        String passwordAndUser = url.substring(0, lm);
+                        env = new HashMap<String,Object>();
+                        int semicolon = passwordAndUser.indexOf(':');
+                        String user, password;
+                        if (semicolon <= 0) {
+                            password = "";
+                            user = passwordAndUser;
+                        } else {
+                            user = passwordAndUser.substring(0, semicolon);
+                            password = passwordAndUser.substring(semicolon +1);
+                        }
+                        env.put(JMXConnector.CREDENTIALS, new String[] {user, password});
+                    } else {
+                        hostPort = url;
+                    }
                     String port = "", host = "";
-                    String[] urlParts = url.split(":", 2);
+                    String[] urlParts = hostPort.split(":", 2);
                     host = urlParts[0];
                     if (urlParts.length == 2) {
                         port = urlParts[1];
+                    } else {
+                        throw new IllegalArgumentException("Invalid connection URL (expected host:port) but found '" + hostPort + "'");
+                    }
+                    try {
+                        port = port.trim();
+                        Integer.parseInt(port);
+                    } catch (NumberFormatException ex) {
+                        throw new ParseInputCommandCreationException("Invalid port number '" + port + "'", ex);
                     }
                     serviceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi");
-                    remote = true;
+                    saveURL = lm <= 0;
                 }
-                JMXConnector connector = JMXConnectorFactory.connect(serviceURL);
+                JMXConnector connector = env == null ? JMXConnectorFactory.connect(serviceURL) : JMXConnectorFactory.connect(serviceURL, env);
                 serverConnection = connector.getMBeanServerConnection();
                 if (serverConnection != null) {
-                    output.outInfo("Connected to " + url + ". Default domain name is " + serverConnection.getDefaultDomain());
+                    output.outInfo("Connected to " + serviceURL.toString() + ". Default domain name is " + serverConnection.getDefaultDomain());
                     ctx.setServer(serverConnection, url);
-                    if (remote) {
+                    if (saveURL) {
                         addRemote(url, true);
                     }
                 }
