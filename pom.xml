@@ -5,7 +5,8 @@
     <packaging>jar</packaging>
     <version>1.5-SNAPSHOT</version>
     <url>https://github.com/m-szalik/tjconsole/wiki</url>
-    <name>Text JConsole</name>
+    <name>Text Java Console</name>
+    <description>JConsole in text mode, can be used for shell scripting.</description>
 
     <licenses>
         <license>
