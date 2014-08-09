@@ -1,14 +1,21 @@
 package org.jsoftware.tjconsole;
 
-import jline.Completor;
-import jline.ConsoleReader;
+import jline.console.ConsoleReader;
+import jline.console.completer.Completer;
+import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.cli.*;
-import org.jsoftware.tjconsole.command.*;
+import org.jsoftware.tjconsole.command.CmdDescription;
+import org.jsoftware.tjconsole.command.CommandAction;
+import org.jsoftware.tjconsole.command.definition.*;
+import org.jsoftware.tjconsole.console.EndOfInputException;
+import org.jsoftware.tjconsole.console.Output;
+import org.jsoftware.tjconsole.console.ParseInputCommandCreationException;
+import org.jsoftware.tjconsole.console.ParseInputCommandNotFoundException;
+import org.jsoftware.tjconsole.util.MyDateConverter;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.prefs.BackingStoreException;
 
 /**
@@ -17,162 +24,271 @@ import java.util.prefs.BackingStoreException;
  * @author szalik
  */
 public class TJConsole {
+    private final ConsoleReader reader;
+    private final List<CommandDefinition> commandDefinitions;
     private final TJContext context;
-    private ConsoleReader reader;
+    private final Properties properties;
     private Output output;
-    private boolean quit = false;
-    private List<AbstractCommand> commands;
-
-    private final HelpCommand helpCommand;
-    private String promptPattern;
-
-    private TJConsole(Output out) throws IOException, BackingStoreException {
-        context = new TJContext();
-        reader = new ConsoleReader();
-        output = out;
-        commands = new ArrayList<AbstractCommand>();
-
-        helpCommand = new HelpCommand(context, output);
-        add(helpCommand);
-        add(new QuitCommand(context, output, this));
-        add(new ConnectCommand(context, output));
-        add(new BeanCommand(context, output));
-        add(new GetAttributeCommand(context, output));
-        add(new SetAttributeCommand(context, output));
-        add(new InfoAttributeCommand(context, output));
-        add(new OperationCommand(context, output));
-    }
 
 
-    public void quit() {
-        quit = true;
-    }
-
-    private void add(Object cc) {
-        if (cc instanceof AbstractCommand) {
-            commands.add((AbstractCommand) cc);
-            helpCommand.addCommand((AbstractCommand) cc);
+    private TJConsole(Properties props) throws BackingStoreException, IOException {
+        this.reader = new ConsoleReader();
+        this.properties = props;
+        this.context = new TJContext();
+        this.context.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                UpdateEnvironmentEvent event = (UpdateEnvironmentEvent) arg;
+                if (event.getKey().equals("DATE_FORMAT")) {
+                    String df = (String) event.getCurrent();
+                    SimpleDateFormat sdf = new SimpleDateFormat(df);
+                    MyDateConverter.getInstance().setCustom(sdf);
+                }
+            }
+        });
+        this.context.setEnvironmentVariable("DATE_FORMAT", "yyyy-MM-dd'T'HH:mm:ss", false);
+        envToSystemProperty(this.context, "javax.net.ssl.trustStorePassword", "TRUST_STORE_PASSWORD", "");
+        envToSystemProperty(this.context, "javax.net.ssl.trustStore", "TRUST_STORE", System.getProperty("user.home") + File.separator + ".trustStore");
+        this.commandDefinitions = new ArrayList<CommandDefinition>();
+        List<CmdDescription> cmdDescriptions = new ArrayList<CmdDescription>();
+        add(cmdDescriptions, new QuitCommandDefinition());
+        add(cmdDescriptions, new ConnectCommandDefinition());
+        add(cmdDescriptions, new UseCommandDefinition());
+        add(cmdDescriptions, new GetAttributeCommandDefinition());
+        add(cmdDescriptions, new SetAttributeCommandDefinition());
+        add(cmdDescriptions, new DescribeCommandDefinition());
+        add(cmdDescriptions, new InvokeOperationCommandDefinition());
+        add(cmdDescriptions, new EnvCommandDefinition());
+        add(cmdDescriptions, new InfoCommandDefinition());
+        add(cmdDescriptions, new HelpCommandDefinition(cmdDescriptions));
+        for (CommandDefinition cd : this.commandDefinitions) {
+            Completer completer = cd.getCompleter(this.context);
+            if (completer != null) {
+                this.reader.addCompleter(completer);
+            }
         }
-        if (cc instanceof Completor) {
-            reader.addCompletor((Completor) cc);
+
+    }
+
+    private void envToSystemProperty(TJContext context, final String systemProperty, final String envKey, String defaultValue) {
+        String sysProp = System.getProperty(systemProperty);
+        if (sysProp == null) {
+            System.setProperty(systemProperty, defaultValue);
+            sysProp = defaultValue;
+        }
+        context.setEnvironmentVariable(envKey, sysProp, false);
+        context.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                UpdateEnvironmentEvent event = (UpdateEnvironmentEvent) arg;
+                if (event.getKey().equals(envKey)) {
+                    System.setProperty(systemProperty, event.getCurrent().toString());
+                }
+            }
+        });
+    }
+
+
+    private void add(List<CmdDescription> cmdDescriptions, Object cc) {
+        if (cc instanceof CommandDefinition) {
+            CommandDefinition cd = (CommandDefinition) cc;
+            commandDefinitions.add(cd);
+            cmdDescriptions.add(cd.getDescription());
+        }
+        if (cc instanceof Completer) {
+            reader.addCompleter((Completer) cc);
         }
     }
 
-    public void read() throws IOException {
-        while (!quit) {
-            printPrompt();
+
+    public void waitForCommands() throws IOException, EndOfInputException {
+        while (true) {
             String line = reader.readLine();
             if (line == null) {
-                System.err.println("\nBye...");
-                System.exit(0);
+                break;
             }
-            processCommand(line);
+            CommandAction action = null;
+            try {
+                action = findCommandAction(line.trim());
+                if (action != null) {
+                    action.doAction(context, output);
+                }
+            } catch (ParseInputCommandNotFoundException ex) {
+                output.outError("Command not found");
+                context.fail(action, 2);
+            } catch (ParseInputCommandCreationException ex) {
+                output.outError("Cannot parse " + ex.getInput());
+                context.fail(action, 3);
+            } catch (Exception ex) { // command execution problem
+                output.outError(ex.getLocalizedMessage());
+                context.fail(action, 99);
+            }
         }
-    }
-
-    private void printPrompt() {
-        String prompt = promptPattern;
-        prompt = prompt.replace("%b", context.getObjectName() == null ? "#NONE#" : context.getObjectName().toString());
-        output.outPrompt(prompt);
+        throw new EndOfInputException();
     }
 
 
-    private boolean processCommand(String line) {
-        boolean r = false;
-        AbstractCommand command = null;
-        for (AbstractCommand ac : commands) {
-            if (ac.matches(line)) {
-                command = ac;
+    private CommandDefinition findCommandDefinition(String input) throws ParseInputCommandNotFoundException {
+        CommandDefinition cmdDef = null;
+        for (CommandDefinition cd : commandDefinitions) {
+            if (cd.matches(input)) {
+                cmdDef = cd;
                 break;
             }
         }
-        if (command == null) {
-            if (line != null && line.trim().length() > 0) {
-                output.outError("Command not found!\n");
+        if (cmdDef == null) {
+            if (input != null && input.trim().length() > 0) {
+                throw new ParseInputCommandNotFoundException(input);
             }
+            return null;
         } else {
-            try {
-                command.action(line);
-                r = true;
-            } catch (Exception e) {
-                output.outError("Command " + line + "error: " + e.getMessage() + "\n");
-            }
+            return cmdDef;
         }
-        return r;
     }
 
-    @SuppressWarnings("static-access")
-    public static void main(String[] args) throws Exception {
-        Properties props = new Properties();
-        props.load(TJConsole.class.getResourceAsStream("/tjconsole.properties"));
-        Options options = new Options();
-        options.addOption(OptionBuilder.withDescription("Display this help and exit.").create('h'));
-        options.addOption(OptionBuilder.withDescription("Quiet - do not display info messages.").create('q'));
-        options.addOption(OptionBuilder.withDescription("Connect to mBean server. (example -c LOCAL:<PID> ==> -c LOCAL:2060").hasArgs(1).create('c'));
-        options.addOption(OptionBuilder.withDescription("Connect to bean.").withArgName("beanName").hasArgs(1).create('b'));
-        options.addOption(OptionBuilder.withDescription("Run script from file.").withArgName("file").hasArgs(1).create('f'));
-        options.addOption(OptionBuilder.withDescription("Show local java processes and exit.").create('p'));
 
-        Output consoleOutput = new Output();
-        TJConsole console = new TJConsole(consoleOutput);
-        console.promptPattern = props.getProperty("prompt.pattern", "> ");
-
-        if (args.length > 0) {
-            CommandLineParser parser = new GnuParser();
-            CommandLine cli;
+    private CommandAction findCommandAction(String input) throws ParseInputCommandNotFoundException, ParseInputCommandCreationException {
+        CommandDefinition cmdDef = findCommandDefinition(input);
+        if (cmdDef == null) {
+            if (input != null && input.trim().length() > 0) {
+                throw new ParseInputCommandNotFoundException(input);
+            }
+            return null;
+        } else {
             try {
-                cli = parser.parse(options, args);
-                if (cli.hasOption('q')) {
-                    consoleOutput.setDisplayInfo(false);
-                }
-                if (cli.hasOption('h')) {
-                    printHelp(options, System.out);
-                    System.exit(0);
-                }
-                if (cli.hasOption('c')) {
-                    String cliArg = cli.getOptionValue('c');
-                    new ConnectCommand(console.context, console.output).action("\\c " + cliArg);
-                }
-                if (cli.hasOption('b')) {
-                    String cliArg = cli.getOptionValue('b');
-                    new BeanCommand(console.context, console.output).action("\\b " + cliArg);
-                }
-                if (cli.hasOption('f')) {
-                    String cliArg = cli.getOptionValue('f');
-                    BufferedReader fileReader = new BufferedReader(new FileReader(new File(cliArg)));
-                    String s;
-                    while ((s = fileReader.readLine()) != null) {
-                        s = s.trim();
-                        if (s.startsWith("#") || s.length() == 0) continue;
-                        if (!console.processCommand(s)) {
-                            System.exit(1);
-                        }
-                    }
-                    System.exit(0);
-                }
-                if (cli.hasOption('p')) {
-                    ProcessListManager processListManager = new ProcessListManager();
-                    for (String ps : processListManager.getLocalProcesses()) {
-                        System.out.println(ps);
-                    }
-                    System.exit(0);
-                }
-            } catch (ParseException exp) {
-                System.err.println("Parsing failed.  Reason: " + exp.getMessage());
-                printHelp(options, System.err);
+                return cmdDef.action(input);
+            } catch (Exception e) {
+                throw new ParseInputCommandCreationException(input, e);
             }
         }
-        System.err.println(props.getProperty("message.welcome", "Welcome to tjconsole"));
-        console.read();
-        System.out.println("Quit.");
+    }
+
+
+    /**
+     * Invoked from TJConsoleLauncher
+     */
+    @SuppressWarnings({"static-access", "unused"})
+    public static void start(String[] args) throws Exception {
+        ConvertUtils.deregister(Date.class);
+        ConvertUtils.register(MyDateConverter.getInstance(), Date.class);
+        Properties props = new Properties();
+        InputStream propsInputStream = null;
+        try {
+            propsInputStream = TJConsole.class.getResourceAsStream("/tjconsole.properties");
+            props.load(propsInputStream);
+        } finally {
+            if (propsInputStream != null) {
+                propsInputStream.close();
+            }
+        }
+        Options options = new Options();
+        options.addOption(OptionBuilder.withDescription("Display this help and exit.").create('h'));
+        options.addOption(OptionBuilder.withDescription("Connect to mBean server. (example --connect <jvm_pid> --connect <host>:<port>").hasArgs(1).create("connect"));
+        options.addOption(OptionBuilder.withDescription("Use mBean.").withArgName("beanName").hasArgs(1).create("use"));
+        options.addOption(OptionBuilder.withDescription("Use mBean.").withArgName("beanName").hasArgs(1).create("bean"));
+        // not supported yet //options.addOption(OptionBuilder.withDescription("Run script (javaScript or groovy) from file.").withArgName("file").hasArgs(1).create("script"));
+        options.addOption(OptionBuilder.withDescription("Show local jvm java processes list and exit.").create("ps"));
+        options.addOption(OptionBuilder.withDescription("Do not use colors for output.").create("xterm"));
+        options.addOption(OptionBuilder.withDescription("Jmx authentication username").withArgName("username").hasArgs(1).create("username"));
+        options.addOption(OptionBuilder.withDescription("Jmx authentication password").withArgName("password").hasArgs(1).create("password"));
+        options.addOption(OptionBuilder.withDescription("Display this help and exit.").create('h'));
+
+
+        TJConsole tjConsole = new TJConsole(props);
+        boolean scriptMode = false;
+        Output consoleOutput = null;
+        List<CommandAction> actions = new LinkedList<CommandAction>();
+        try {
+            if (args.length > 0) {
+                CommandLineParser parser = new GnuParser();
+                CommandLine cli;
+                try {
+                    cli = parser.parse(options, args);
+                    boolean colors = !cli.hasOption("script") && !cli.hasOption("xterm");
+                    consoleOutput = new Output(System.out, colors);
+                    if (cli.hasOption("username")) {
+                        actions.add(tjConsole.findCommandAction("set USERNAME " + cli.getOptionValue("username")));
+                    }
+                    if (cli.hasOption("password")) {
+                        actions.add(tjConsole.findCommandAction("set PASSWORD " + cli.getOptionValue("password")));
+                    }
+                    if (cli.hasOption("connect")) {
+                        String cliArg = cli.getOptionValue("connect");
+                        actions.add(tjConsole.findCommandAction("connect " + cliArg));
+                    }
+                    if (cli.hasOption("bean")) {
+                        actions.add(tjConsole.findCommandAction("use " + cli.getOptionValue("bean")));
+                    }
+                    if (cli.hasOption("use")) {
+                        actions.add(tjConsole.findCommandAction("use " + cli.getOptionValue("use")));
+                    }
+                    if (cli.hasOption("script")) {
+                        actions.add(tjConsole.findCommandAction("run " + cli.getOptionValue("script")));
+                        scriptMode = true;
+                    }
+                    if (cli.hasOption("ps")) {
+                        actions.clear();
+                        actions.add(tjConsole.findCommandAction("ps"));
+                        scriptMode = true;
+                    }
+                    if (cli.hasOption('h')) {
+                        printHelp(options, System.out);
+                        System.exit(0);
+                    }
+                } catch (ParseException exp) {
+                    System.err.println("Parsing failed.  Reason: " + exp.getMessage());
+                    printHelp(options, System.err);
+                    System.exit(1);
+                }
+            } else {
+                consoleOutput = new Output(System.out, true);
+                scriptMode = false;
+            }
+            // init
+            tjConsole.output = consoleOutput;
+            if (!scriptMode) {
+                tjConsole.initInteractiveMode();
+            }
+            for (CommandAction action : actions) {
+                try {
+                    action.doAction(tjConsole.context, tjConsole.output);
+                } catch (Exception ex) {
+                    tjConsole.context.fail(action, 99);
+                    throw ex;
+                }
+            }
+            if (!scriptMode) {
+                tjConsole.waitForCommands();
+            }
+        } catch (EndOfInputException ex) {
+            if (!scriptMode) {
+                consoleOutput.println("\nBye.");
+            }
+        } finally {
+            if (consoleOutput != null) {
+                consoleOutput.close();
+                tjConsole.reader.shutdown();
+            }
+        }
+        int exitCode = tjConsole.context.getExitCode();
+        System.exit(exitCode);
+    }
+
+    private void initInteractiveMode() {
+        output.println(properties.getProperty("message.welcome", "Welcome to tJconsole"));
+        reader.setPrompt(properties.getProperty("prompt.pattern", "> "));
     }
 
 
     private static void printHelp(Options options, PrintStream outStream) {
-        PrintWriter out = new PrintWriter(outStream);
-        HelpFormatter helpFormatter = new HelpFormatter();
-        helpFormatter.printHelp(out, 80, "tjconsole", "TJConsole - text jconsole.", options, 3, 2, "", false);
-        out.flush();
+        try {
+            PrintWriter out = new PrintWriter(new OutputStreamWriter(outStream, "UTF-8"));
+            HelpFormatter helpFormatter = new HelpFormatter();
+            helpFormatter.printHelp(out, 80, "tjconsole", "TJConsole - text jconsole.", options, 3, 2, "", false);
+            out.flush();
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError(e);
+        }
     }
 
 }
