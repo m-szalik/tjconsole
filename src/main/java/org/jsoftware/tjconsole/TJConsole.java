@@ -46,7 +46,7 @@ public class TJConsole {
             }
         });
         this.context.setEnvironmentVariable("DATE_FORMAT", "yyyy-MM-dd'T'HH:mm:ss", false);
-        envToSystemProperty(this.context, "javax.net.ssl.trustStorePassword", "TRUST_STORE_PASSWORD", null);
+        envToSystemProperty(this.context, "javax.net.ssl.trustStorePassword", "TRUST_STORE_PASSWORD", "");
         envToSystemProperty(this.context, "javax.net.ssl.trustStore", "TRUST_STORE", System.getProperty("user.home") + File.separator + ".trustStore");
         this.commandDefinitions = new ArrayList<CommandDefinition>();
         List<CmdDescription> cmdDescriptions = new ArrayList<CmdDescription>();
@@ -167,6 +167,7 @@ public class TJConsole {
 
     @SuppressWarnings("static-access")
     public static void main(String[] args) throws Exception {
+        System.err.println("Classloader:" + TJConsole.class.getClassLoader());
         ConvertUtils.deregister(Date.class);
         ConvertUtils.register(MyDateConverter.getInstance(), Date.class);
         Properties props = new Properties();
