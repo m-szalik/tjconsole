@@ -62,6 +62,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {
                 final String url = extractURL(input);
+                String messageURL;
                 Map<String,Object> env = null;
                 if (url.length() == 0) {  // current state
                     if (ctx.getServer() == null) {
@@ -78,6 +79,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                 if (ProcessListManager.isLocalProcess(url)) {
                     try {
                         serviceURL = new ProcessListManager().getLocalServiceURL(url);
+                        messageURL = url;
                     } catch (LocalJvmAttachException e) {
                         output.outError("Unable to connect to local JVM. Run jvm with -Dcom.sun.management.jmxremote");
                         ctx.fail(this, 10);
@@ -118,12 +120,13 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                         throw new ParseInputCommandCreationException("Invalid port number '" + port + "'", ex);
                     }
                     serviceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi");
+                    messageURL = host + ":" + port;
                     saveURL = lm <= 0;
                 }
                 JMXConnector connector = env == null ? JMXConnectorFactory.connect(serviceURL) : JMXConnectorFactory.connect(serviceURL, env);
                 serverConnection = connector.getMBeanServerConnection();
                 if (serverConnection != null) {
-                    output.outInfo("Connected to " + serviceURL.toString() + ". Default domain name is " + serverConnection.getDefaultDomain());
+                    output.outInfo("Connected to " + messageURL + ". Default domain name is " + serverConnection.getDefaultDomain());
                     ctx.setServer(serverConnection, url);
                     if (saveURL) {
                         addRemote(url, true);
