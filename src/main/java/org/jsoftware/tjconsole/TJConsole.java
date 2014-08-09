@@ -171,7 +171,15 @@ public class TJConsole {
         ConvertUtils.deregister(Date.class);
         ConvertUtils.register(MyDateConverter.getInstance(), Date.class);
         Properties props = new Properties();
-        props.load(TJConsole.class.getResourceAsStream("/tjconsole.properties"));
+        InputStream propsInputStream = null;
+        try {
+            propsInputStream = TJConsole.class.getResourceAsStream("/tjconsole.properties");
+            props.load(propsInputStream);
+        } finally {
+            if (propsInputStream != null) {
+                propsInputStream.close();
+            }
+        }
         Options options = new Options();
         options.addOption(OptionBuilder.withDescription("Display this help and exit.").create('h'));
         options.addOption(OptionBuilder.withDescription("Connect to mBean server. (example --connect <jvm_pid> --connect <host>:<port>").hasArgs(1).create("connect"));
