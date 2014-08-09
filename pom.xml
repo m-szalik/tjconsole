@@ -87,12 +87,13 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
+                    <finalName>../tjconsole-${project.version}</finalName>
                     <descriptors>
-                        <descriptor>${basedir}/src/main/assembly/all.xml</descriptor>
+                        <descriptor>src/main/assembly-all.xml</descriptor>
                     </descriptors>
                     <archive>
                         <manifest>
-                            <mainClass>org.jsoftware.tjconsole.TJConsole</mainClass>
+                            <mainClass>org.jsoftware.tjconsole.launcher.TJConsoleLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
