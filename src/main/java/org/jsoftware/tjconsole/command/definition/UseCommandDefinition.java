@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * @author szalik
  */
 public class UseCommandDefinition extends AbstractCommandDefinition {
-    private Logger logger = Logger.getLogger(getClass().getName());
+    private final Logger logger = Logger.getLogger(getClass().getName());
 
     public UseCommandDefinition() {
         super("Select bean.", "use <beanName>", "use", false);
@@ -27,7 +27,7 @@ public class UseCommandDefinition extends AbstractCommandDefinition {
 
 
     @Override
-    public CommandAction action(final String input) throws Exception {
+    public CommandAction action(final String input) {
         return new CommandAction() {
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {

@@ -16,7 +16,7 @@ public class InfoCommandDefinition extends AbstractCommandDefinition {
     }
 
 
-    public CommandAction action(String input) throws Exception {
+    public CommandAction action(String input) {
         return new CommandAction() {
             @Override
             public void doAction(TJContext tjContext, Output output) {

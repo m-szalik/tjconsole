@@ -24,7 +24,7 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
 
 
     @Override
-    public CommandAction action(String input) throws Exception {
+    public CommandAction action(String input) {
         final List<String> attributes = new ArrayList<String>(Arrays.asList(input.substring(prefix.length()).trim().split("[ ,]")));
         for (Iterator<String> it = attributes.iterator(); it.hasNext(); ) {
             if (it.next().trim().length() == 0) {

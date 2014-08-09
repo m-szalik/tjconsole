@@ -24,14 +24,15 @@ import java.util.prefs.BackingStoreException;
  * @author szalik
  */
 public class TJConsole {
-    private ConsoleReader reader = new ConsoleReader();
+    private final ConsoleReader reader;
+    private final List<CommandDefinition> commandDefinitions;
     private final TJContext context;
     private final Properties properties;
     private Output output;
-    private List<CommandDefinition> commandDefinitions;
 
 
-    private TJConsole(Properties props) throws IOException, BackingStoreException {
+    private TJConsole(Properties props) throws BackingStoreException, IOException {
+        this.reader = new ConsoleReader();
         this.properties = props;
         this.context = new TJContext();
         this.context.addObserver(new Observer() {
@@ -127,7 +128,7 @@ public class TJConsole {
     }
 
 
-    private CommandDefinition findCommandDefinition(String input) throws ParseInputCommandNotFoundException, ParseInputCommandCreationException {
+    private CommandDefinition findCommandDefinition(String input) throws ParseInputCommandNotFoundException {
         CommandDefinition cmdDef = null;
         for (CommandDefinition cd : commandDefinitions) {
             if (cd.matches(input)) {

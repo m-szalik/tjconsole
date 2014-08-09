@@ -53,8 +53,7 @@ public class ProcessListManager {
             if (connectorAddress == null) { // no JMX - enable it
                 Properties remoteProperties = vm.getSystemProperties();
                 String separator = remoteProperties.getProperty("file.separator", File.separator);
-                StringBuilder agent = new StringBuilder(remoteProperties.getProperty("java.home")).append(separator).append("lib").append(separator).append("management-agent.jar");
-                vm.loadAgent(agent.toString());
+                vm.loadAgent(remoteProperties.getProperty("java.home") + separator + "lib" + separator + "management-agent.jar");
                 connectorAddress = vm.getAgentProperties().getProperty("com.sun.management.jmxremote.localConnectorAddress");
             }
             return new JMXServiceURL(connectorAddress);

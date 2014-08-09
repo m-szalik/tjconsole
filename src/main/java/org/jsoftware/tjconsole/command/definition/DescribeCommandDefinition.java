@@ -24,7 +24,7 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
 
 
     @Override
-    public CommandAction action(String input) throws Exception {
+    public CommandAction action(String input) {
         return new CommandAction() {
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {
@@ -34,7 +34,7 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                     for (int i = ai.getName().length(); i < 32; i++) {
                         sb.append(' ');
                     }
-                    sb.append(" ").append((ai.isReadable() ? "R" : " ") + (ai.isWritable() ? "W" : " ")).append("  ").append(ai.getType());
+                    sb.append(" ").append(ai.isReadable() ? "R" : " ").append(ai.isWritable() ? "W" : " ").append("  ").append(ai.getType());
                     outList.add(sb.toString());
                 }
                 for (MBeanOperationInfo oi : ctx.getServer().getMBeanInfo(ctx.getObjectName()).getOperations()) {

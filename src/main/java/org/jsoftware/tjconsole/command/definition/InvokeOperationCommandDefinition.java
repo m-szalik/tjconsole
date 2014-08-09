@@ -28,7 +28,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
 
 
     @Override
-    public CommandAction action(final String inputOrg) throws Exception {
+    public CommandAction action(final String inputOrg) {
         return new CommandAction() {
 
             @Override
@@ -132,10 +132,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
     public final boolean matches(String input) {
         if (input.startsWith(prefix)) return true;
         String s = input.trim();
-        if (s.length() == 0) {
-            return false;
-        }
-        return s.indexOf("(") > 0;
+        return s.length() != 0 && s.indexOf("(") > 0;
     }
 
     @Override

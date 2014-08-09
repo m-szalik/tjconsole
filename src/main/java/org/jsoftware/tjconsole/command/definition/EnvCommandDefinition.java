@@ -19,7 +19,7 @@ public class EnvCommandDefinition extends AbstractCommandDefinition {
     }
 
 
-    public CommandAction action(String input) throws Exception {
+    public CommandAction action(String input) {
         String[] data = input.substring(prefix.length()).trim().split("=", 2);
         final String key = data[0].trim();
         final String valueStr = data[1].trim();

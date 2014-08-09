@@ -25,9 +25,8 @@ public interface CommandDefinition {
      * Create command to execute
      *
      * @param input command input
-     * @throws Exception if command cannot be parsed properly
      */
-    CommandAction action(String input) throws Exception;
+    CommandAction action(String input);
 
 
     /**

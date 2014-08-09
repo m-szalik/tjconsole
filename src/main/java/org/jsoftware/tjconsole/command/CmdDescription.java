@@ -37,7 +37,7 @@ public class CmdDescription implements Serializable {
     }
 
     public boolean canBeUsed(TJContext tjContext) {
-        return !requiresBean || (requiresBean && tjContext.isBeanSelected());
+        return !requiresBean || tjContext.isBeanSelected();
     }
 
 

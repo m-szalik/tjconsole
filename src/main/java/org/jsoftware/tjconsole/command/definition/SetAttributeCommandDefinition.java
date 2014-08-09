@@ -21,7 +21,7 @@ public class SetAttributeCommandDefinition extends AbstractCommandDefinition {
 
 
     @Override
-    public CommandAction action(String input) throws Exception {
+    public CommandAction action(String input) {
         String[] data = input.substring(prefix.length()).trim().split("=", 2);
         final String attribute = data[0].trim();
         final String valueStr = data[1].trim();

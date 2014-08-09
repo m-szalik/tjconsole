@@ -57,7 +57,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
     }
 
     @Override
-    public CommandAction action(final String input) throws Exception {
+    public CommandAction action(final String input) {
         return new CommandAction() {
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {
@@ -105,19 +105,18 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                     } else {
                         hostPort = url;
                     }
-                    String port = "", host = "";
+                    String host;
+                    int port;
                     String[] urlParts = hostPort.split(":", 2);
                     host = urlParts[0];
                     if (urlParts.length == 2) {
-                        port = urlParts[1];
+                        try {
+                            port = Integer.parseInt(urlParts[1].trim());
+                        } catch (NumberFormatException ex) {
+                            throw new ParseInputCommandCreationException("Invalid port number '" + urlParts[1].trim() + "'", ex);
+                        }
                     } else {
                         throw new IllegalArgumentException("Invalid connection URL (expected host:port) but found '" + hostPort + "'");
-                    }
-                    try {
-                        port = port.trim();
-                        Integer.parseInt(port);
-                    } catch (NumberFormatException ex) {
-                        throw new ParseInputCommandCreationException("Invalid port number '" + port + "'", ex);
                     }
                     serviceURL = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi");
                     messageURL = host + ":" + port;

@@ -11,10 +11,10 @@ import java.util.Observable;
  */
 abstract class AbstractCommandDefinition extends Observable implements CommandDefinition {
     private final CmdDescription description;
-    protected final String prefix;
+    final String prefix;
 
 
-    public AbstractCommandDefinition(String description, String full, String prefix, boolean requiresBean) {
+    AbstractCommandDefinition(String description, String full, String prefix, boolean requiresBean) {
         this.description = new CmdDescription(description, full, prefix, requiresBean);
         this.prefix = prefix;
     }
