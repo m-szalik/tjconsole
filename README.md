@@ -1,11 +1,11 @@
 Text Java Console
 =================
 
-### About:
+### About
 TJConsole is a Text version of JConsole.
 Perfect if you have only text console or terminal. You can use it also for communication between java programs and external software like shell scripts for example.
 
-### Features:
+### Features
 
  * Display, update of JMX attributes
  * Invoke JMX operations (remote operations)
@@ -13,6 +13,10 @@ Perfect if you have only text console or terminal. You can use it also for commu
  * Remember recent remote connections
  * Auto completion with _tab_
  * Support for script files – load mxBeans instructions from external file    (currently only by sending commands to standard input - _stdin_)
+
+### Requirements
+
+ * Java Development Kit 6 or newer (tools.jar from JDK is required)
 
 ### License
 Apache License 2.0
