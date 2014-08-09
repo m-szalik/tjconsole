@@ -165,9 +165,11 @@ public class TJConsole {
     }
 
 
-    @SuppressWarnings("static-access")
-    public static void main(String[] args) throws Exception {
-        System.err.println("Classloader:" + TJConsole.class.getClassLoader());
+    /**
+     * Invoked from TJConsoleLauncher
+     */
+    @SuppressWarnings({"static-access", "unused"})
+    public static void start(String[] args) throws Exception {
         ConvertUtils.deregister(Date.class);
         ConvertUtils.register(MyDateConverter.getInstance(), Date.class);
         Properties props = new Properties();
