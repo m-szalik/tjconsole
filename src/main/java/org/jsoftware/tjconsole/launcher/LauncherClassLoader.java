@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 /**
  * Force load some classes with different classLoader to change parent classLoader.
+ *
  * @author szalik
  */
 class LauncherClassLoader extends ClassLoader {
@@ -23,7 +24,7 @@ class LauncherClassLoader extends ClassLoader {
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         Class<?> clazz;
         if (name.startsWith(forcePrefix)) {
-             clazz = forceLoadClass(name);
+            clazz = forceLoadClass(name);
         } else {
             clazz = super.loadClass(name);
         }
@@ -43,7 +44,7 @@ class LauncherClassLoader extends ClassLoader {
                 } else {
                     break;
                 }
-            } while(cl != null);
+            } while (cl != null);
             if (inputStream == null) {
                 throw new ClassNotFoundException("Cannot find resource '" + resourceName + "'");
             }
@@ -59,7 +60,6 @@ class LauncherClassLoader extends ClassLoader {
             }
         }
     }
-
 
 
     private byte[] toByteArray(InputStream inputStream) throws IOException {

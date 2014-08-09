@@ -29,7 +29,7 @@ public class SetAttributeCommandDefinition extends AbstractCommandDefinition {
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {
                 MBeanAttributeInfo attr = null;
-                for(MBeanAttributeInfo ai : ctx.getAttributes()) {
+                for (MBeanAttributeInfo ai : ctx.getAttributes()) {
                     if (ai.getName().equalsIgnoreCase(attribute)) {
                         attr = ai;
                         break;
@@ -61,7 +61,6 @@ public class SetAttributeCommandDefinition extends AbstractCommandDefinition {
             }
         };
     }
-
 
 
     private Object getValueAsType(String valInput, String type) {

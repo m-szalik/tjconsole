@@ -42,7 +42,7 @@ public class TJContext extends Observable {
             }
         }
         Object prev = environment.get(key);
-        if ((value != null && ! value.equals(prev)) || (value == null && prev != null)) {
+        if ((value != null && !value.equals(prev)) || (value == null && prev != null)) {
             setChanged();
         }
         notifyObservers(new UpdateEnvironmentEvent(key, prev, value));

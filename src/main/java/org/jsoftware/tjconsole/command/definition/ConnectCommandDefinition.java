@@ -63,7 +63,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
             public void doAction(TJContext ctx, Output output) throws Exception {
                 final String url = extractURL(input);
                 String messageURL;
-                Map<String,Object> env = null;
+                Map<String, Object> env = null;
                 if (url.length() == 0) {  // current state
                     if (ctx.getServer() == null) {
                         output.outError("Not connected to any JMX server.");
@@ -89,9 +89,9 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                     String hostPort;
                     int lm = url.lastIndexOf('@');
                     if (lm > 0) { // user and password
-                        hostPort = url.substring(lm +1);
+                        hostPort = url.substring(lm + 1);
                         String passwordAndUser = url.substring(0, lm);
-                        env = new HashMap<String,Object>();
+                        env = new HashMap<String, Object>();
                         int semicolon = passwordAndUser.indexOf(':');
                         String user, password;
                         if (semicolon <= 0) {
@@ -99,9 +99,9 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                             user = passwordAndUser;
                         } else {
                             user = passwordAndUser.substring(0, semicolon);
-                            password = passwordAndUser.substring(semicolon +1);
+                            password = passwordAndUser.substring(semicolon + 1);
                         }
-                        env.put(JMXConnector.CREDENTIALS, new String[] {user, password});
+                        env.put(JMXConnector.CREDENTIALS, new String[]{user, password});
                     } else {
                         hostPort = url;
                     }
@@ -161,7 +161,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
             if (matches(buffer)) {
                 String urlPrefix = extractURL(buffer);
                 ArrayList<String> urlCandidate = new ArrayList<String>(remoteConnectionHistory);
-                for(JvmPid jvm : processListManager.getLocalProcessList()) {
+                for (JvmPid jvm : processListManager.getLocalProcessList()) {
                     urlCandidate.add(jvm.getFullName());
                 }
                 for (String s : urlCandidate) {

@@ -142,6 +142,7 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
     public Completer getCompleter(final TJContext tjContext) {
         return new Completer() {
             private final Logger logger = Logger.getLogger(getClass().getName());
+
             @Override
             public int complete(String buffer, int cursor, List<CharSequence> candidates) {
                 buffer = buffer.trim();
@@ -173,7 +174,6 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
             }
         };
     }
-
 
 
     private List<MBeanOperationInfo> operations(TJContext ctx) throws Exception {

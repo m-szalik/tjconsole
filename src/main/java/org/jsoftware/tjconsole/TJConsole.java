@@ -60,7 +60,7 @@ public class TJConsole {
         add(cmdDescriptions, new EnvCommandDefinition());
         add(cmdDescriptions, new InfoCommandDefinition());
         add(cmdDescriptions, new HelpCommandDefinition(cmdDescriptions));
-        for(CommandDefinition cd : this.commandDefinitions) {
+        for (CommandDefinition cd : this.commandDefinitions) {
             Completer completer = cd.getCompleter(this.context);
             if (completer != null) {
                 this.reader.addCompleter(completer);
@@ -146,8 +146,6 @@ public class TJConsole {
     }
 
 
-
-
     private CommandAction findCommandAction(String input) throws ParseInputCommandNotFoundException, ParseInputCommandCreationException {
         CommandDefinition cmdDef = findCommandDefinition(input);
         if (cmdDef == null) {
@@ -197,7 +195,7 @@ public class TJConsole {
                 CommandLine cli;
                 try {
                     cli = parser.parse(options, args);
-                    boolean colors = ! cli.hasOption("script") && ! cli.hasOption("xterm");
+                    boolean colors = !cli.hasOption("script") && !cli.hasOption("xterm");
                     consoleOutput = new Output(System.out, colors);
                     if (cli.hasOption("username")) {
                         actions.add(tjConsole.findCommandAction("set USERNAME " + cli.getOptionValue("username")));
@@ -239,10 +237,10 @@ public class TJConsole {
             }
             // init
             tjConsole.output = consoleOutput;
-            if (! scriptMode) {
+            if (!scriptMode) {
                 tjConsole.initInteractiveMode();
             }
-            for(CommandAction action : actions) {
+            for (CommandAction action : actions) {
                 try {
                     action.doAction(tjConsole.context, tjConsole.output);
                 } catch (Exception ex) {
@@ -250,11 +248,11 @@ public class TJConsole {
                     throw ex;
                 }
             }
-            if (! scriptMode) {
+            if (!scriptMode) {
                 tjConsole.waitForCommands();
             }
-        } catch(EndOfInputException ex) {
-            if (! scriptMode) {
+        } catch (EndOfInputException ex) {
+            if (!scriptMode) {
                 consoleOutput.println("\nBye.");
             }
         } finally {

@@ -31,7 +31,7 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                 List<String> outList = new ArrayList<String>();
                 for (MBeanAttributeInfo ai : ctx.getAttributes()) {
                     StringBuilder sb = new StringBuilder("@|cyan ").append(ai.getName()).append(" |@");
-                    for(int i=ai.getName().length(); i<32; i++) {
+                    for (int i = ai.getName().length(); i < 32; i++) {
                         sb.append(' ');
                     }
                     sb.append(" ").append((ai.isReadable() ? "R" : " ") + (ai.isWritable() ? "W" : " ")).append("  ").append(ai.getType());
@@ -45,9 +45,9 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                         out.append("()|@");
                     } else {
                         out.append("(|@");
-                        for(int i=0; i<parameters.length; i++) {
+                        for (int i = 0; i < parameters.length; i++) {
                             out.append("@|blue ").append(parameters[i].getName()).append(':').append(parameters[i].getType()).append("|@");
-                            if (i +1 < parameters.length) {
+                            if (i + 1 < parameters.length) {
                                 out.append(",");
                             }
                         }
@@ -57,7 +57,7 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                     outList.add(out.toString());
                 }
                 Collections.sort(outList);
-                for(String s : outList) {
+                for (String s : outList) {
                     output.println(s);
                 }
             }

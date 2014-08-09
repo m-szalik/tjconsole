@@ -55,7 +55,6 @@ public class Output implements Closeable {
     }
 
 
-
     @Override
     public void close() throws IOException {
         if (ansiInstalled) {

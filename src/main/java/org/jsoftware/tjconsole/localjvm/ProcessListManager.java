@@ -26,13 +26,11 @@ public class ProcessListManager {
     public Collection<JvmPid> getLocalProcessList() {
         List<VirtualMachineDescriptor> localVms = VirtualMachine.list();
         List<JvmPid> out = new ArrayList<JvmPid>();
-        for (VirtualMachineDescriptor vmd: localVms) {
+        for (VirtualMachineDescriptor vmd : localVms) {
             out.add(new JvmPid(vmd.id(), vmd.displayName()));
         }
         return out;
     }
-
-
 
 
     /**
@@ -68,6 +66,6 @@ public class ProcessListManager {
     public static boolean isLocalProcess(String url) {
         String[] parts = url.trim().split(":", 2);
         Pattern digits = Pattern.compile("\\d*");
-        return digits.matcher(parts[0]).matches() && (parts.length < 2 || ! digits.matcher(parts[1]).matches());
+        return digits.matcher(parts[0]).matches() && (parts.length < 2 || !digits.matcher(parts[1]).matches());
     }
 }

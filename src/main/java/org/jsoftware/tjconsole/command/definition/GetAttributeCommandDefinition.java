@@ -26,7 +26,7 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
     @Override
     public CommandAction action(String input) throws Exception {
         final List<String> attributes = new ArrayList<String>(Arrays.asList(input.substring(prefix.length()).trim().split("[ ,]")));
-        for(Iterator<String> it = attributes.iterator(); it.hasNext();) {
+        for (Iterator<String> it = attributes.iterator(); it.hasNext(); ) {
             if (it.next().trim().length() == 0) {
                 it.remove();
             }
@@ -46,7 +46,7 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
                     output.println(sb.toString());
                     attributes.remove(ai.getName());
                 }
-                if (! attributes.isEmpty()) {
+                if (!attributes.isEmpty()) {
                     output.outError("Cannot find attributes: " + attributes);
                     ctx.fail(this, 20);
                 }
@@ -56,7 +56,7 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
                 if (attributes.size() == 0) {
                     return false;
                 }
-                for(String a : attributes) {
+                for (String a : attributes) {
                     if (a.equalsIgnoreCase(aiName)) {
                         return false;
                     }

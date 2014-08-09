@@ -22,19 +22,18 @@ public class HelpCommandDefinition extends AbstractCommandDefinition {
     }
 
 
-
     public CommandAction action(String input) throws Exception {
         return new CommandAction() {
             @Override
             public void doAction(TJContext tjContext, Output output) {
-            for (CmdDescription h : cmdDescriptions) {
-                StringBuilder sb = new StringBuilder("@|white ").append(h.getFull()).append(" |@").append("  ");
-                while (sb.length() < 30) {
-                    sb.append(' ');
+                for (CmdDescription h : cmdDescriptions) {
+                    StringBuilder sb = new StringBuilder("@|white ").append(h.getFull()).append(" |@").append("  ");
+                    while (sb.length() < 30) {
+                        sb.append(' ');
+                    }
+                    sb.append("@|blue ").append(h.getDescription()).append(" |@");
+                    output.println(sb.toString());
                 }
-                sb.append("@|blue ").append(h.getDescription()).append(" |@");
-                output.println(sb.toString());
-            }
             }
         };
     }

@@ -56,7 +56,6 @@ public class UseCommandDefinition extends AbstractCommandDefinition {
     }
 
 
-
     @Override
     public Completer getCompleter(final TJContext ctx) {
         return new Completer() {
