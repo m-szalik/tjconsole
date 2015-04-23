@@ -1,6 +1,9 @@
 package org.jsoftware.tjconsole;
 
+import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
+import javax.management.openmbean.TabularData;
+import javax.management.openmbean.TabularDataSupport;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
@@ -15,6 +18,9 @@ public abstract class DataOutputService {
     static {
         dataOutputServices = new HashMap<String, DataOutputService>();
         dataOutputServices.put(CompositeDataSupport.class.getName(), new CompositeDataOutputService());
+        dataOutputServices.put(CompositeData.class.getName(), new CompositeDataOutputService());
+        dataOutputServices.put(TabularDataSupport.class.getName(), new TabularDataOutputService());
+        dataOutputServices.put(TabularData.class.getName(), new TabularDataOutputService());
         dataOutputServices.put("void", new VoidDataOutputService());
         dataOutputServices.put(Date.class.getName(), new DateDataOutputService());
     }
@@ -32,6 +38,7 @@ public abstract class DataOutputService {
     }
 
     public abstract void output(Object data, TJContext tjContext, Appendable output) throws IOException;
+
 }
 
 
@@ -49,13 +56,29 @@ class ToStringDataOutputService extends DataOutputService {
 
 }
 
+class TabularDataOutputService extends DataOutputService {
+
+    @Override
+    public void output(Object data, TJContext tjContext, Appendable output) throws IOException {
+        TabularData td = (TabularData) data;
+        output.append("TabularData: of ").append(td.getTabularType().toString()).append("{\n");
+        int index = 0;
+        for (Object o : td.values()) {
+            output.append('[').append(Integer.toString(index)).append("]: ");
+            DataOutputService.get(o.getClass().getName()).output(o, tjContext, output);
+            output.append('\n');
+        }
+        output.append("}\n");
+    }
+}
+
 class CompositeDataOutputService extends DataOutputService {
 
     @Override
     public void output(Object data, TJContext tjContext, Appendable output) throws IOException {
-        CompositeDataSupport cds = (CompositeDataSupport) data;
-        output.append("CompositeData:").append(cds.getCompositeType().getTypeName()).append("{\n");
-        for (Object o : cds.values()) {
+        CompositeData cd = (CompositeData) data;
+        output.append("CompositeData:").append(cd.getCompositeType().getTypeName()).append("{\n");
+        for (Object o : cd.values()) {
             DataOutputService.get(o.getClass().getName()).output(o, tjContext, output);
             output.append('\n');
         }
