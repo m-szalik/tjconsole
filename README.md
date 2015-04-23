@@ -27,3 +27,7 @@ Download latest stable version [tjconsole-1.5](https://github.com/m-szalik/tjcon
 ### Problems and questions
 In case of problems or questions? [Create an issue](https://github.com/m-szalik/tjconsole/issues) on GitHub.
 
+### Example
+`java -jar tjconsole-all.jar -xterm -connect <java_process_id> -use <bean_name> -cmd <command_1> -cmd <command_2>`
+
+`java -jar tjconsole-all.jar -xterm -connect 18478 -use java.lang:type=Threading -cmd get -cmd describe`

@@ -12,13 +12,16 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class Output implements Closeable {
     private final Pattern ansiRemovePattern = Pattern.compile("(@\\|\\w* )|( ?\\|@)");
     private final PrintStream out;
-    private boolean useColors = true, ansiInstalled;
+    private boolean useColors = true, ansiInstalled, filterInfo;
 
     public Output(PrintStream out, boolean useColors) {
         this.out = out;
         setUseColors(useColors);
     }
 
+    public void setFilterInfo(boolean filterInfo) {
+        this.filterInfo = filterInfo;
+    }
 
     public boolean isUseColors() {
         return useColors;
@@ -68,6 +71,8 @@ public class Output implements Closeable {
     }
 
     public void outInfo(String text) {
-        println("@|cyan " + text + "|@");
+        if (! filterInfo) {
+            println("@|cyan " + text + "|@");
+        }
     }
 }
