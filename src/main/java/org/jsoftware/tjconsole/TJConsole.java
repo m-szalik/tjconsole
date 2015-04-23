@@ -114,6 +114,8 @@ public class TJConsole {
                 if (action != null) {
                     action.doAction(context, output);
                 }
+            } catch (EndOfInputException ex) {
+                throw ex;
             } catch (ParseInputCommandNotFoundException ex) {
                 output.outError("Command not found");
                 context.fail(action, 2);
