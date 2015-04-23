@@ -4,11 +4,12 @@ import org.jsoftware.tjconsole.TJContext;
 import org.jsoftware.tjconsole.command.CommandAction;
 import org.jsoftware.tjconsole.console.Output;
 
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanOperationInfo;
-import javax.management.MBeanParameterInfo;
+import javax.management.*;
+import javax.management.openmbean.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ import java.util.List;
  * @author szalik
  */
 public class DescribeCommandDefinition extends AbstractCommandDefinition {
+    private static final int SPACE = 18;
 
     public DescribeCommandDefinition() {
         super("Describe attributes and operations of current bean.", "describe", "describe", true);
@@ -31,10 +33,11 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                 List<String> outList = new ArrayList<String>();
                 for (MBeanAttributeInfo ai : ctx.getAttributes()) {
                     StringBuilder sb = new StringBuilder("@|cyan ").append(ai.getName()).append(" |@");
-                    for (int i = ai.getName().length(); i < 32; i++) {
+                    for (int i = ai.getName().length(); i < SPACE; i++) {
                         sb.append(' ');
                     }
-                    sb.append(" ").append(ai.isReadable() ? "R" : " ").append(ai.isWritable() ? "W" : " ").append("  ").append(ai.getType());
+                    sb.append(" ").append(ai.isReadable() ? "R" : " ").append(ai.isWritable() ? "W" : " ").append("  ");
+                    describeType(ctx, ai.getName(), ai.getType(), sb);
                     outList.add(sb.toString());
                 }
                 for (MBeanOperationInfo oi : ctx.getServer().getMBeanInfo(ctx.getObjectName()).getOperations()) {
@@ -53,7 +56,11 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
                         }
                         out.append("@|green )|@");
                     }
-                    out.append("  ").append(oi.getReturnType());
+                    out.append("  ");
+                    for (int i = oi.getName().length(); i < SPACE+2; i++) {
+                        out.append(' ');
+                    }
+                    describeType(ctx, oi.getName(), oi.getReturnType(), out);
                     outList.add(out.toString());
                 }
                 Collections.sort(outList);
@@ -64,5 +71,71 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
         };
 
     }
+
+    private void describeType(TJContext ctx, String name, String type, StringBuilder out) throws AttributeNotFoundException, MBeanException, ReflectionException, InstanceNotFoundException, IOException {
+        if (type.startsWith("javax.management.openmbean.TabularData")) {
+            TabularType tt = ((TabularData) ctx.getServer().getAttribute(ctx.getObjectName(), name)).getTabularType();
+            describeType(tt, out);
+        } else if (type.startsWith("javax.management.openmbean.CompositeData")) {
+            CompositeType ct = ((CompositeData) ctx.getServer().getAttribute(ctx.getObjectName(), name)).getCompositeType();
+            describeType(ct, out);
+        } else {
+            out.append(type);
+        }
+    }
+
+    private static void describeType(Object type, StringBuilder out) {
+        if (type instanceof TabularType) {
+            TabularType tt = (TabularType) type;
+            out.append("TabularData ").append(tt.getTypeName());
+            out.append(" (\"").append(tt.getDescription()).append("\" of ");
+            describeType(tt.getRowType(), out);
+            out.append(")");
+            return;
+        }
+        if (type instanceof CompositeType) {
+            CompositeType ct = (CompositeType) type;
+            out.append("CompositeData ").append(ct.getTypeName());
+            out.append(" (\"").append(ct.getDescription()).append("\" contains (");
+            List<String> keys = new LinkedList<String>(ct.keySet());
+            Collections.sort(keys);
+            for(int i=0; i<keys.size(); i++) {
+                String key = keys.get(i);
+                out.append(key).append("=");
+                describeType(ct.getType(key), out);
+                if (i<keys.size() -1) {
+                    out.append(", ");
+                }
+            }
+            out.append(")");
+            return;
+        }
+        if (type instanceof ArrayType) {
+            ArrayType arrayType = (ArrayType) type;
+            out.append(arrayType.getTypeName()).append(" (\"").append(arrayType.getDescription()).append("\" array of ");
+            describeType(arrayType.getElementOpenType(), out);
+            return;
+        }
+        if (type instanceof SimpleType) {
+            SimpleType simpleType = (SimpleType) type;
+            String typeName = simpleType.getTypeName();
+            if (typeName.startsWith("java.lang.")) {
+                typeName = typeName.substring("java.lang.".length());
+            }
+            out.append(typeName);
+            if (! simpleType.getTypeName().equals(simpleType.getDescription())) {
+                out.append(" \"").append(simpleType.getDescription()).append("\"");
+            }
+            return;
+        }
+
+        if (type instanceof OpenType) {
+            OpenType openType = (OpenType) type;
+            out.append(openType.getTypeName()).append(" (\"").append(openType.getDescription()).append("\" of ").append(openType.getClassName());
+            return;
+        }
+        out.append(type.toString());
+    }
+
 
 }
