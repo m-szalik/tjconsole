@@ -191,6 +191,7 @@ public class TJConsole {
         options.addOption(OptionBuilder.withDescription("Do not use colors for output.").create("xterm"));
         options.addOption(OptionBuilder.withDescription("Jmx authentication username").withArgName("username").hasArgs(1).create("username"));
         options.addOption(OptionBuilder.withDescription("Jmx authentication password").withArgName("password").hasArgs(1).create("password"));
+        options.addOption(OptionBuilder.withDescription("Command to be executed (multiple occurrences allowed)").withArgName("command").hasArgs(Option.UNLIMITED_VALUES).create("cmd"));
         options.addOption(OptionBuilder.withDescription("Display this help and exit.").create('h'));
 
 
@@ -198,6 +199,7 @@ public class TJConsole {
         boolean scriptMode = false;
         Output consoleOutput = null;
         List<CommandAction> actions = new LinkedList<CommandAction>();
+        List<String> inputToExecute = new LinkedList<String>();
         try {
             if (args.length > 0) {
                 CommandLineParser parser = new GnuParser();
@@ -235,6 +237,13 @@ public class TJConsole {
                         printHelp(options, System.out);
                         System.exit(0);
                     }
+                    if (cli.hasOption("cmd")) {
+                        for(String cmdOp : cli.getOptionValues("cmd")) {
+                            inputToExecute.add(cmdOp.trim());
+                            System.err.println(">> " + cmdOp);
+                        }
+                        scriptMode = true;
+                    }
                 } catch (ParseException exp) {
                     System.err.println("Parsing failed.  Reason: " + exp.getMessage());
                     printHelp(options, System.err);
@@ -248,6 +257,8 @@ public class TJConsole {
             tjConsole.output = consoleOutput;
             if (!scriptMode) {
                 tjConsole.initInteractiveMode();
+            } else {
+                consoleOutput.setFilterInfo(true);
             }
             for (CommandAction action : actions) {
                 try {
@@ -257,11 +268,15 @@ public class TJConsole {
                     throw ex;
                 }
             }
-            if (!scriptMode) {
+            for(String cmdInput : inputToExecute) {
+                CommandAction commandAction = tjConsole.findCommandAction(cmdInput);
+                commandAction.doAction(tjConsole.context, tjConsole.output);
+            }
+            if (! scriptMode) {
                 tjConsole.waitForCommands();
             }
         } catch (EndOfInputException ex) {
-            if (!scriptMode) {
+            if (! scriptMode) {
                 consoleOutput.println("\nBye.");
             }
         } finally {
