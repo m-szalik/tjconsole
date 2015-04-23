@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class DataOutputService {
+    static final String SHIFT = "   ";
     private static final DataOutputService defaultDataOutputService = new ToStringDataOutputService();
     private static final Map<String, DataOutputService> dataOutputServices;
 
@@ -45,6 +46,7 @@ public abstract class DataOutputService {
 class ToStringDataOutputService extends DataOutputService {
     @Override
     public void output(Object data, TJContext tjContext, Appendable output) throws IOException {
+        output.append("@|yellow ");
         if (data == null) {
             output.append("null");
         } else if ("".equals(data.toString())) {
@@ -52,6 +54,7 @@ class ToStringDataOutputService extends DataOutputService {
         } else {
             output.append(data.toString());
         }
+        output.append("|@");
     }
 
 }
@@ -61,12 +64,14 @@ class TabularDataOutputService extends DataOutputService {
     @Override
     public void output(Object data, TJContext tjContext, Appendable output) throws IOException {
         TabularData td = (TabularData) data;
-        output.append("TabularData: of ").append(td.getTabularType().toString()).append("{\n");
+        output.append("TabularData of ").append(td.getTabularType().getRowType().getTypeName()).append(" {\n");
         int index = 0;
         for (Object o : td.values()) {
-            output.append('[').append(Integer.toString(index)).append("]: ");
-            DataOutputService.get(o.getClass().getName()).output(o, tjContext, output);
-            output.append('\n');
+            output.append(SHIFT).append("[").append(Integer.toString(index)).append("]: ");
+            StringBuilder cdOutput = new StringBuilder();
+            DataOutputService.get(o.getClass().getName()).output(o, tjContext, cdOutput);
+            String cdStr = cdOutput.toString().trim().replace("\n", "\n\t");
+            output.append(cdStr).append('\n');
         }
         output.append("}\n");
     }
@@ -77,10 +82,12 @@ class CompositeDataOutputService extends DataOutputService {
     @Override
     public void output(Object data, TJContext tjContext, Appendable output) throws IOException {
         CompositeData cd = (CompositeData) data;
-        output.append("CompositeData:").append(cd.getCompositeType().getTypeName()).append("{\n");
-        for (Object o : cd.values()) {
+        output.append("CompositeData of ").append(cd.getCompositeType().getTypeName()).append(" {\n");
+        for (String key : cd.getCompositeType().keySet()) {
+            output.append(SHIFT).append("@|cyan ").append(key).append("|@ = ");
+            Object o = cd.get(key);
             DataOutputService.get(o.getClass().getName()).output(o, tjContext, output);
-            output.append('\n');
+            output.append("\n");
         }
         output.append("}\n");
     }
@@ -100,7 +107,7 @@ class ArrayDataOutputService extends DataOutputService {
         output.append("Array[\n");
         for (int i = 0; i < Array.getLength(data); i++) {
             Object o = Array.get(data, i);
-            output.append("index:").append(String.valueOf(i)).append(" = ");
+            output.append("[").append(String.valueOf(i)).append("]: ");
             get(o.getClass().getName()).output(o, tjContext, output);
             output.append('\n');
         }
@@ -112,6 +119,7 @@ class DateDataOutputService extends DataOutputService {
 
     @Override
     public void output(Object data, TJContext tjContext, Appendable output) throws IOException {
+        output.append("@|yellow ");
         if (data == null) {
             output.append("null");
         } else {
@@ -124,5 +132,6 @@ class DateDataOutputService extends DataOutputService {
             }
             output.append(sdf.format((Date) data));
         }
+        output.append("|@");
     }
 }

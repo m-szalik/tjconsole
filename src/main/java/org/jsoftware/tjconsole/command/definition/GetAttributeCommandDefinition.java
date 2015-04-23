@@ -39,10 +39,9 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
                         continue;
                     }
                     StringBuilder sb = new StringBuilder();
-                    sb.append("@|cyan ").append(ai.getName()).append("|@ = @|yellow ");
+                    sb.append("@|cyan ").append(ai.getName()).append("|@ = ");
                     Object value = ctx.getServer().getAttribute(ctx.getObjectName(), ai.getName());
                     DataOutputService.get(ai.getType()).output(value, ctx, sb);
-                    sb.append(" |@");
                     output.println(sb.toString());
                     attributes.remove(ai.getName());
                 }
