@@ -22,7 +22,7 @@ Perfect if you have only text console or terminal. You can use it also for commu
 Apache License 2.0
 
 ### Download
-Download latest stable version [tjconsole-1.5](https://github.com/m-szalik/tjconsole/blob/master/tjconsole-1.5-all.jar?raw=true).
+Download latest stable version [tjconsole-1.6](https://github.com/m-szalik/tjconsole/blob/master/tjconsole-1.6-all.jar?raw=true).
 
 ### Problems and questions
 In case of problems or questions? [Create an issue](https://github.com/m-szalik/tjconsole/issues) on GitHub.
