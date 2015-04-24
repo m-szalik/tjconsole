@@ -87,24 +87,24 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
     private static void describeType(Object type, StringBuilder out) {
         if (type instanceof TabularType) {
             TabularType tt = (TabularType) type;
-            out.append("TabularData ").append(tt.getTypeName());
-            out.append(" (\"").append(tt.getDescription()).append("\" of ");
+            out.append("TabularData ").append(tt.getTypeName()).append(" (");
+            appendDescription(tt.getDescription(), out).append(" of ");
             describeType(tt.getRowType(), out);
             out.append(")");
             return;
         }
         if (type instanceof CompositeType) {
             CompositeType ct = (CompositeType) type;
-            out.append("CompositeData ").append(ct.getTypeName());
-            out.append(" (\"").append(ct.getDescription()).append("\" contains (");
+            out.append("CompositeData ").append(ct.getTypeName()).append(" (");
+            appendDescription(ct.getDescription(), out).append(" contains (");
             List<String> keys = new LinkedList<String>(ct.keySet());
             Collections.sort(keys);
             for(int i=0; i<keys.size(); i++) {
                 String key = keys.get(i);
-                out.append(key).append("=");
+                out.append("@|cyan ").append(key).append("|@=");
                 describeType(ct.getType(key), out);
                 if (i<keys.size() -1) {
-                    out.append(", ");
+                    out.append(',');
                 }
             }
             out.append(")");
@@ -112,8 +112,10 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
         }
         if (type instanceof ArrayType) {
             ArrayType arrayType = (ArrayType) type;
-            out.append(arrayType.getTypeName()).append(" (\"").append(arrayType.getDescription()).append("\" array of ");
+            out.append(arrayType.getTypeName()).append(" (");
+            appendDescription(arrayType.getDescription(), out).append(" array of ");
             describeType(arrayType.getElementOpenType(), out);
+            out.append(')');
             return;
         }
         if (type instanceof SimpleType) {
@@ -124,18 +126,24 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
             }
             out.append(typeName);
             if (! simpleType.getTypeName().equals(simpleType.getDescription())) {
-                out.append(" \"").append(simpleType.getDescription()).append("\"");
+                out.append(' ');
+                appendDescription(simpleType.getDescription(), out);
             }
             return;
         }
-
-        if (type instanceof OpenType) {
+        if (type instanceof OpenType) { // other OpenTypes - for future usage
             OpenType openType = (OpenType) type;
-            out.append(openType.getTypeName()).append(" (\"").append(openType.getDescription()).append("\" of ").append(openType.getClassName());
+            out.append(openType.getTypeName()).append(" (");
+            appendDescription(openType.getDescription(), out);
+            out.append(" of ").append(openType.getClassName()).append(")");
             return;
         }
         out.append(type.toString());
     }
 
+    private static StringBuilder appendDescription(String desc, StringBuilder out) {
+        out.append("@|magenta '").append(desc).append("'|@");
+        return out;
+    }
 
 }
