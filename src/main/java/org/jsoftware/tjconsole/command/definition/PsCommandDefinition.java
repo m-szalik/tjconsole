@@ -6,7 +6,8 @@ import org.jsoftware.tjconsole.console.Output;
 import org.jsoftware.tjconsole.localjvm.JvmPid;
 import org.jsoftware.tjconsole.localjvm.ProcessListManager;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 
 /**
