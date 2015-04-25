@@ -74,71 +74,75 @@ public class DescribeCommandDefinition extends AbstractCommandDefinition {
 
     private void describeType(TJContext ctx, String name, String type, StringBuilder out) throws AttributeNotFoundException, MBeanException, ReflectionException, InstanceNotFoundException, IOException {
         if (type.startsWith("javax.management.openmbean.TabularData")) {
-            TabularType tt = ((TabularData) ctx.getServer().getAttribute(ctx.getObjectName(), name)).getTabularType();
-            describeType(tt, out);
+            TabularData td = (TabularData) ctx.getServer().getAttribute(ctx.getObjectName(), name);
+            describeType(td == null ? null : td.getTabularType(), out);
         } else if (type.startsWith("javax.management.openmbean.CompositeData")) {
-            CompositeType ct = ((CompositeData) ctx.getServer().getAttribute(ctx.getObjectName(), name)).getCompositeType();
-            describeType(ct, out);
+            CompositeData cd = (CompositeData) ctx.getServer().getAttribute(ctx.getObjectName(), name);
+            describeType(cd == null ? null : cd.getCompositeType(), out);
         } else {
             out.append(type);
         }
     }
 
     private static void describeType(Object type, StringBuilder out) {
-        if (type instanceof TabularType) {
-            TabularType tt = (TabularType) type;
-            out.append("TabularData ").append(tt.getTypeName()).append(" (");
-            appendDescription(tt.getDescription(), out).append(" of ");
-            describeType(tt.getRowType(), out);
-            out.append(")");
-            return;
-        }
-        if (type instanceof CompositeType) {
-            CompositeType ct = (CompositeType) type;
-            out.append("CompositeData ").append(ct.getTypeName()).append(" (");
-            appendDescription(ct.getDescription(), out).append(" contains (");
-            List<String> keys = new LinkedList<String>(ct.keySet());
-            Collections.sort(keys);
-            for(int i=0; i<keys.size(); i++) {
-                String key = keys.get(i);
-                out.append("@|cyan ").append(key).append("|@=");
-                describeType(ct.getType(key), out);
-                if (i<keys.size() -1) {
-                    out.append(',');
+        if (type == null) {
+            out.append("Information unavailable");
+        } else {
+            if (type instanceof TabularType) {
+                TabularType tt = (TabularType) type;
+                out.append("TabularData ").append(tt.getTypeName()).append(" (");
+                appendDescription(tt.getDescription(), out).append(" of ");
+                describeType(tt.getRowType(), out);
+                out.append(")");
+                return;
+            }
+            if (type instanceof CompositeType) {
+                CompositeType ct = (CompositeType) type;
+                out.append("CompositeData ").append(ct.getTypeName()).append(" (");
+                appendDescription(ct.getDescription(), out).append(" contains (");
+                List<String> keys = new LinkedList<String>(ct.keySet());
+                Collections.sort(keys);
+                for (int i = 0; i < keys.size(); i++) {
+                    String key = keys.get(i);
+                    out.append("@|cyan ").append(key).append("|@=");
+                    describeType(ct.getType(key), out);
+                    if (i < keys.size() - 1) {
+                        out.append(',');
+                    }
                 }
+                out.append(")");
+                return;
             }
-            out.append(")");
-            return;
-        }
-        if (type instanceof ArrayType) {
-            ArrayType arrayType = (ArrayType) type;
-            out.append(arrayType.getTypeName()).append(" (");
-            appendDescription(arrayType.getDescription(), out).append(" array of ");
-            describeType(arrayType.getElementOpenType(), out);
-            out.append(')');
-            return;
-        }
-        if (type instanceof SimpleType) {
-            SimpleType simpleType = (SimpleType) type;
-            String typeName = simpleType.getTypeName();
-            if (typeName.startsWith("java.lang.")) {
-                typeName = typeName.substring("java.lang.".length());
+            if (type instanceof ArrayType) {
+                ArrayType arrayType = (ArrayType) type;
+                out.append(arrayType.getTypeName()).append(" (");
+                appendDescription(arrayType.getDescription(), out).append(" array of ");
+                describeType(arrayType.getElementOpenType(), out);
+                out.append(')');
+                return;
             }
-            out.append(typeName);
-            if (! simpleType.getTypeName().equals(simpleType.getDescription())) {
-                out.append(' ');
-                appendDescription(simpleType.getDescription(), out);
+            if (type instanceof SimpleType) {
+                SimpleType simpleType = (SimpleType) type;
+                String typeName = simpleType.getTypeName();
+                if (typeName.startsWith("java.lang.")) {
+                    typeName = typeName.substring("java.lang.".length());
+                }
+                out.append(typeName);
+                if (!simpleType.getTypeName().equals(simpleType.getDescription())) {
+                    out.append(' ');
+                    appendDescription(simpleType.getDescription(), out);
+                }
+                return;
             }
-            return;
+            if (type instanceof OpenType) { // other OpenTypes - for future usage
+                OpenType openType = (OpenType) type;
+                out.append(openType.getTypeName()).append(" (");
+                appendDescription(openType.getDescription(), out);
+                out.append(" of ").append(openType.getClassName()).append(")");
+                return;
+            }
+            out.append(type.toString());
         }
-        if (type instanceof OpenType) { // other OpenTypes - for future usage
-            OpenType openType = (OpenType) type;
-            out.append(openType.getTypeName()).append(" (");
-            appendDescription(openType.getDescription(), out);
-            out.append(" of ").append(openType.getClassName()).append(")");
-            return;
-        }
-        out.append(type.toString());
     }
 
     private static StringBuilder appendDescription(String desc, StringBuilder out) {

@@ -75,7 +75,7 @@ public class RendererFactory {
                 output.append(vOut);
                 output.append("\n");
             }
-            output.append("}\n");
+            output.append("}");
         }
     }
 
