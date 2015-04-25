@@ -2,7 +2,7 @@ package org.jsoftware.tjconsole.command.definition;
 
 import jline.console.completer.Completer;
 import org.apache.commons.beanutils.ConvertUtils;
-import org.jsoftware.tjconsole.DataOutputService;
+import org.jsoftware.tjconsole.RendererFactory;
 import org.jsoftware.tjconsole.TJContext;
 import org.jsoftware.tjconsole.command.CommandAction;
 import org.jsoftware.tjconsole.console.Output;
@@ -74,8 +74,8 @@ public class InvokeOperationCommandDefinition extends AbstractCommandDefinition 
                 Object returnValue = ctx.getServer().invoke(ctx.getObjectName(), operation.getName(), params, signature);
                 StringBuilder sb = new StringBuilder();
                 sb.append("@|green Method result:(").append(operation.getReturnType()).append(") |@ @|yellow ");
-                DataOutputService.get(operation.getReturnType()).output(returnValue, ctx, sb);
-                sb.append(" |@");
+                CharSequence vOut = RendererFactory.getInstance().getRendererByTypeName(operation.getReturnType()).render(ctx, returnValue);
+                sb.append(vOut).append(" |@");
                 output.println(sb.toString());
             }
         };

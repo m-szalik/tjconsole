@@ -1,7 +1,7 @@
 package org.jsoftware.tjconsole.command.definition;
 
 import jline.console.completer.Completer;
-import org.jsoftware.tjconsole.DataOutputService;
+import org.jsoftware.tjconsole.RendererFactory;
 import org.jsoftware.tjconsole.TJContext;
 import org.jsoftware.tjconsole.command.CommandAction;
 import org.jsoftware.tjconsole.console.Output;
@@ -38,11 +38,9 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
                     if (skip(ai.getName())) {
                         continue;
                     }
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("@|cyan ").append(ai.getName()).append("|@ = ");
                     Object value = ctx.getServer().getAttribute(ctx.getObjectName(), ai.getName());
-                    DataOutputService.get(ai.getType()).output(value, ctx, sb);
-                    output.println(sb.toString());
+                    CharSequence vOut = RendererFactory.getInstance().getRendererByTypeName(ai.getType()).render(ctx, value);
+                    output.println("@|cyan " + ai.getName() + "|@ = " + vOut);
                     attributes.remove(ai.getName());
                 }
                 if (!attributes.isEmpty()) {
