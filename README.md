@@ -1,5 +1,5 @@
-Text Java Console
-=================
+Text Java Console - CLI JConsole
+================================
 
 ### About
 TJConsole is a Text version of JConsole.
