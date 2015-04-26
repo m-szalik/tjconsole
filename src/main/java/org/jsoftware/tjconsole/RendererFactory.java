@@ -46,7 +46,6 @@ public class RendererFactory {
         return defaultRenderer;
     }
 
-
     class TabularDataRenderer extends NullValueAwareAbstractRenderer<TabularData> {
         @Override
         public void renderMeTo(TJContext tjContext, TabularData td, StringBuilder output) {
@@ -56,7 +55,7 @@ public class RendererFactory {
                 output.append(SHIFT_SPACE).append("[").append(Integer.toString(index)).append("]: ");
                 Renderer renderer = getRendererByTypeName(o.getClass().getName());
                 CharSequence vOut = renderer.render(tjContext, o);
-                vOut = vOut.toString().trim().replace("\n", "\n\t");
+                vOut = vOut.toString().trim().replace("\n", "\n" + SHIFT_SPACE);
                 output.append(vOut).append('\n');
             }
             output.append("}\n");
@@ -72,8 +71,7 @@ public class RendererFactory {
                 Object o = cd.get(key);
                 Renderer renderer = getRendererByTypeName(o.getClass().getName());
                 CharSequence vOut = renderer.render(tjContext, o);
-                output.append(vOut);
-                output.append("\n");
+                output.append(vOut.toString().trim().replace("\n", "\n" + SHIFT_SPACE)).append('\n');
             }
             output.append("}");
         }
@@ -106,6 +104,7 @@ class VoidRenderer implements Renderer {
 class ToStringRenderer extends NullValueAwareAbstractRenderer<Object> {
     @Override
     public void renderMeTo(TJContext tjContext, Object data, StringBuilder output) {
+        output.append("@|yellow ");
         if ("".equals(data.toString())) {
             output.append("<empty string>");
         } else {
