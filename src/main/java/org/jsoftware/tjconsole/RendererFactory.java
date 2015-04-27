@@ -15,6 +15,7 @@ import java.util.List;
  * @author szalik
  */
 public class RendererFactory {
+    static final Renderer NULL_VALUE_RENDERER = new NullValueRenderer();
     private static final String SHIFT_SPACE = "   ";
     private static final RendererFactory INSTANCE = new RendererFactory();
     private final Renderer defaultRenderer = new ToStringRenderer();
@@ -69,8 +70,13 @@ public class RendererFactory {
             for (String key : cd.getCompositeType().keySet()) {
                 output.append(SHIFT_SPACE).append("@|cyan ").append(key).append("|@ = ");
                 Object o = cd.get(key);
-                Renderer renderer = getRendererByTypeName(o.getClass().getName());
-                CharSequence vOut = renderer.render(tjContext, o);
+                CharSequence vOut;
+                if (o != null) {
+                    Renderer renderer = getRendererByTypeName(o.getClass().getName());
+                    vOut = renderer.render(tjContext, o);
+                } else {
+                    vOut = RendererFactory.NULL_VALUE_RENDERER.render(tjContext, o);
+                }
                 output.append(vOut.toString().trim().replace("\n", "\n" + SHIFT_SPACE)).append('\n');
             }
             output.append("}");
@@ -130,17 +136,24 @@ class DateRenderer extends NullValueAwareAbstractRenderer<Date> {
     }
 }
 
+class NullValueRenderer implements Renderer {
+    @Override
+    public CharSequence render(TJContext tjContext, Object data) {
+        return "@|yellow <null>|@";
+    }
+}
 
 abstract class NullValueAwareAbstractRenderer<T> implements Renderer {
     @Override
     @SuppressWarnings({"unchecked"})
     public CharSequence render(TJContext tjContext, Object data) {
         if (data == null) {
-            return "@|yellow <null>|@";
+            return RendererFactory.NULL_VALUE_RENDERER.render(tjContext, data);
+        } else {
+            StringBuilder output = new StringBuilder();
+            renderMeTo(tjContext, (T) data, output);
+            return output;
         }
-        StringBuilder output = new StringBuilder();
-        renderMeTo(tjContext, (T) data, output);
-        return output;
     }
 
     protected abstract void renderMeTo(TJContext tjContext, T data, StringBuilder output);
