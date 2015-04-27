@@ -161,7 +161,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                 String urlPrefix = extractURL(buffer);
                 ArrayList<String> urlCandidate = new ArrayList<String>(remoteConnectionHistory);
                 for (JvmPid jvm : processListManager.getLocalProcessList()) {
-                    urlCandidate.add(jvm.getFullName());
+                    urlCandidate.add(jvm.getShortName());
                 }
                 for (String s : urlCandidate) {
                     if (s.startsWith(urlPrefix)) candidates.add(" " + s);

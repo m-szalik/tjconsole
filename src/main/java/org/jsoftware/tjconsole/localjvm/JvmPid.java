@@ -24,6 +24,17 @@ public class JvmPid {
         return pid + ":" + command;
     }
 
+    public String getShortName() {
+        int i = command.indexOf(' ');
+        String shortCommand;
+        if (i > 0) {
+            shortCommand = command.substring(0, i);
+        } else {
+            shortCommand = command;
+        }
+        return pid + ":" + shortCommand;
+    }
+
     @Override
     public String toString() {
         return "jvm(" + pid + ":" + command + ")";
