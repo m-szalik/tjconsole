@@ -3,7 +3,7 @@
     <groupId>org.jsoftware</groupId>
     <artifactId>tjconsole</artifactId>
     <packaging>jar</packaging>
-    <version>1.7-SNAPSHOT</version>
+    <version>1.8-SNAPSHOT</version>
     <url>https://github.com/m-szalik/tjconsole/wiki</url>
     <name>Text Java Console</name>
     <description>JConsole in text mode, can be used for shell scripting.</description>
