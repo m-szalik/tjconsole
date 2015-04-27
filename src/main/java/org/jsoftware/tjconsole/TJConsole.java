@@ -189,7 +189,6 @@ public class TJConsole {
         options.addOption(OptionBuilder.withDescription("Connect to mBean server. (example --connect <jvm_pid> --connect <host>:<port>").hasArgs(1).create("connect"));
         options.addOption(OptionBuilder.withDescription("Use mBean.").withArgName("beanName").hasArgs(1).create("use"));
         options.addOption(OptionBuilder.withDescription("Use mBean.").withArgName("beanName").hasArgs(1).create("bean"));
-        // not supported yet //options.addOption(OptionBuilder.withDescription("Run script (javaScript or groovy) from file.").withArgName("file").hasArgs(1).create("script"));
         options.addOption(OptionBuilder.withDescription("Show local jvm java processes list and exit.").create("ps"));
         options.addOption(OptionBuilder.withDescription("Do not use colors for output.").create("xterm"));
         options.addOption(OptionBuilder.withDescription("Jmx authentication username").withArgName("username").hasArgs(1).create("username"));
