@@ -81,7 +81,7 @@ public class ConnectCommandDefinition extends AbstractCommandDefinition {
                         serviceURL = new ProcessListManager().getLocalServiceURL(url);
                         messageURL = url;
                     } catch (LocalJvmAttachException e) {
-                        output.outError("Unable to connect to local JVM. Run jvm with -Dcom.sun.management.jmxremote");
+                        output.outError("Unable to connect to local JVM. Please enable jmx remote access on your java process. More: https://gist.github.com/m-szalik/93c559bf2ad964078e1e");
                         ctx.fail(this, 10);
                         return;
                     }
