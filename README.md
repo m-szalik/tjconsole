@@ -1,6 +1,8 @@
 Text Java Console - CLI JConsole
 ================================
 
+[![Join the chat at https://gitter.im/m-szalik/tjconsole](https://badges.gitter.im/m-szalik/tjconsole.svg)](https://gitter.im/m-szalik/tjconsole?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ### About
 TJConsole is a Text version of JConsole.
 Perfect if you have only text console or terminal. You can use it also for communication between java programs and external software like shell scripts for example.
