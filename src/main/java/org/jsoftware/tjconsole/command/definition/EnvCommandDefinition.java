@@ -6,6 +6,7 @@ import org.jsoftware.tjconsole.command.CommandAction;
 import org.jsoftware.tjconsole.console.Output;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Set environment variable like username or password
@@ -21,20 +22,31 @@ public class EnvCommandDefinition extends AbstractCommandDefinition {
 
     public CommandAction action(String input) {
         String[] data = input.substring(prefix.length()).trim().split("=", 2);
-        final String key = data[0].trim();
-        final String valueStr = data[1].trim();
-        return new CommandAction() {
-            @Override
-            public void doAction(TJContext tjContext, Output output) {
-                try {
-                    tjContext.setEnvironmentVariable(key, valueStr, true);
-                    output.println("@|red " + key + "|@ = " + valueStr);
-                } catch (IllegalArgumentException ex) {
-                    tjContext.fail(this, 60);
-                    output.outError("Cannot update " + key + " - " + ex.getLocalizedMessage());
+        if (data.length < 2) {
+            return new CommandAction() {
+                @Override
+                public void doAction(TJContext tjContext, Output output) {
+                    for(Map.Entry<String,Object> me : tjContext.getEnvironment().entrySet()) {
+                        output.println("@|red " + me.getKey() + "|@ = " + me.getValue());
+                    }
                 }
-            }
-        };
+            };
+        } else {
+            final String key = data[0].trim();
+            final String valueStr = data[1].trim();
+            return new CommandAction() {
+                @Override
+                public void doAction(TJContext tjContext, Output output) {
+                    try {
+                        tjContext.setEnvironmentVariable(key, valueStr, true);
+                        output.println("@|red " + key + "|@ = " + valueStr);
+                    } catch (IllegalArgumentException ex) {
+                        tjContext.fail(this, 60);
+                        output.outError("Cannot update " + key + " - " + ex.getLocalizedMessage());
+                    }
+                }
+            };
+        }
     }
 
 
