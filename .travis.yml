@@ -5,6 +5,12 @@ jdk:
 
 script: mvn clean test
 
+before_script:
+  - pip install --user codecov
+
+after_success:
+  - codecov
+
 notifications:
   webhooks:
     urls:
