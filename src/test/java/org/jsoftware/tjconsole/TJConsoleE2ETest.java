@@ -3,6 +3,7 @@ package org.jsoftware.tjconsole;
 import org.jsoftware.tjconsole.console.Output;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.management.MBeanServer;
@@ -49,7 +50,7 @@ public class TJConsoleE2ETest {
         Assert.assertTrue(outputHelper.toString().length() > 0);
     }
 
-    @Test
+    @Test @Ignore
     public void testCmdGet() throws Exception {
         tjConsole.executeCommand("use java.lang:type=Memory", outputHelper.getOutput());
         outputHelper.clear();
