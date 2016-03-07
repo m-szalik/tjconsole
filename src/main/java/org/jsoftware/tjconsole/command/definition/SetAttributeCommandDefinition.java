@@ -16,7 +16,7 @@ import javax.management.MBeanAttributeInfo;
 public class SetAttributeCommandDefinition extends AbstractCommandDefinition {
 
     public SetAttributeCommandDefinition() {
-        super("Set attribute value.", "set <attributeName> <newValue>", "set", true);
+        super("Set attribute value.", "set <attributeName>=<newValue>", "set", true);
     }
 
 

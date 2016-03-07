@@ -31,7 +31,7 @@ public class TJConsole {
     private Output output;
 
 
-    private TJConsole(Properties props) throws BackingStoreException, IOException {
+    TJConsole(Properties props) throws BackingStoreException, IOException {
         this.reader = new ConsoleReader();
         this.properties = props;
         this.context = new TJContext();
@@ -71,6 +71,10 @@ public class TJConsole {
 
     }
 
+    public TJContext getContext() {
+        return context;
+    }
+
     private void envToSystemProperty(TJContext context, final String systemProperty, final String envKey, String defaultValue) {
         String sysProp = System.getProperty(systemProperty);
         if (sysProp == null) {
@@ -101,6 +105,13 @@ public class TJConsole {
         }
     }
 
+    public CommandAction executeCommand(String command, Output output) throws Exception {
+        CommandAction action = findCommandAction(command);
+        if (action != null) {
+            action.doAction(context, output);
+        }
+        return action;
+    }
 
     public void waitForCommands() throws IOException, EndOfInputException {
         while (true) {
@@ -110,10 +121,7 @@ public class TJConsole {
             }
             CommandAction action = null;
             try {
-                action = findCommandAction(line.trim());
-                if (action != null) {
-                    action.doAction(context, output);
-                }
+                action = executeCommand(line.trim(), output);
             } catch (EndOfInputException ex) {
                 throw ex;
             } catch (ParseInputCommandNotFoundException ex) {
