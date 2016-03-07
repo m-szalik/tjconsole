@@ -10,6 +10,7 @@ import javax.management.MBeanAttributeInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -34,6 +35,7 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
         return new CommandAction() {
             @Override
             public void doAction(TJContext ctx, Output output) throws Exception {
+                final List<String> attributesCopy = new LinkedList<String>(attributes);
                 for (MBeanAttributeInfo ai : ctx.getAttributes()) {
                     if (skip(ai.getName())) {
                         continue;
@@ -41,9 +43,9 @@ public class GetAttributeCommandDefinition extends AbstractCommandDefinition {
                     Object value = ctx.getServer().getAttribute(ctx.getObjectName(), ai.getName());
                     CharSequence vOut = RendererFactory.getInstance().getRendererByTypeName(ai.getType()).render(ctx, value);
                     output.println("@|cyan " + ai.getName() + "|@ = " + vOut);
-                    attributes.remove(ai.getName());
+                    attributesCopy.remove(ai.getName());
                 }
-                if (!attributes.isEmpty()) {
+                if (! attributesCopy.isEmpty()) {
                     output.outError("Cannot find attributes: " + attributes);
                     ctx.fail(this, 20);
                 }
