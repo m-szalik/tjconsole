@@ -5,6 +5,7 @@ Text Java Console - CLI JConsole
 [![Build Status](https://travis-ci.org/m-szalik/tjconsole.svg?branch=master)](https://travis-ci.org/m-szalik/tjconsole)
 [![codecov.io](https://codecov.io/github/m-szalik/tjconsole/coverage.svg?branch=master)](https://codecov.io/github/m-szalik/tjconsole?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/56e2b350df573d003a5f5be2/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56e2b350df573d003a5f5be2)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/7c50206d52624536aa54f1cdd9bbceb7)](https://www.codacy.com/app/szalik/tjconsole)
 
 ### About
 TJConsole is a Text version of JConsole.
