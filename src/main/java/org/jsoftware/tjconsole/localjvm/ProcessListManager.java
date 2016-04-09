@@ -18,11 +18,7 @@ import java.util.regex.Pattern;
  */
 public class ProcessListManager {
     private final static Pattern SPLITTER = Pattern.compile("[:\\- ]");
-
-
-    public ProcessListManager() {
-    }
-
+    
     public Collection<JvmPid> getLocalProcessList() {
         List<VirtualMachineDescriptor> localVms = VirtualMachine.list();
         List<JvmPid> out = new ArrayList<JvmPid>();
