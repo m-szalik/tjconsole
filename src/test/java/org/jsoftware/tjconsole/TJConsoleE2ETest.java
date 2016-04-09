@@ -1,7 +1,6 @@
 package org.jsoftware.tjconsole;
 
 import org.jsoftware.tjconsole.console.Output;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,6 +10,10 @@ import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
 import java.util.Properties;
 import java.util.regex.Pattern;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TJConsoleE2ETest {
     private TestOutputHelper outputHelper;
@@ -27,19 +30,19 @@ public class TJConsoleE2ETest {
     @Test
     public void testCmdHelp() throws Exception {
         tjConsole.executeCommand("help", outputHelper.getOutput());
-        Assert.assertTrue(outputHelper.toString().length() > 0);
+        assertTrue(outputHelper.toString().length() > 0);
     }
 
     @Test
     public void testCmdInfo() throws Exception {
         tjConsole.executeCommand("info", outputHelper.getOutput());
-        Assert.assertTrue(outputHelper.toString().contains("localServer"));
+        assertTrue(outputHelper.toString().contains("localServer"));
     }
 
     @Test
     public void testCmdUse() throws Exception {
         tjConsole.executeCommand("use", outputHelper.getOutput());
-        Assert.assertTrue(outputHelper.toString().contains("Runtime"));
+        assertTrue(outputHelper.toString().contains("Runtime"));
     }
 
     @Test
@@ -47,7 +50,7 @@ public class TJConsoleE2ETest {
         tjConsole.executeCommand("use java.lang:type=Memory", outputHelper.getOutput());
         outputHelper.clear();
         tjConsole.executeCommand("describe", outputHelper.getOutput());
-        Assert.assertTrue(outputHelper.toString().length() > 0);
+        assertTrue(outputHelper.toString().length() > 0);
     }
 
     @Test
@@ -55,7 +58,9 @@ public class TJConsoleE2ETest {
         tjConsole.executeCommand("use java.lang:type=Runtime", outputHelper.getOutput());
         outputHelper.clear();
         tjConsole.executeCommand("get StartTime", outputHelper.getOutput());
-        outputHelper.matchesPattern("StartTime = \\d*");
+        Pattern pattern = Pattern.compile("StartTime = \\d*");
+        String str = outputHelper.toString().trim();
+        assertTrue("Invalid response '" + str + "'", pattern.matcher(str).matches());
     }
 
     @Test
@@ -64,7 +69,7 @@ public class TJConsoleE2ETest {
         tjConsole.executeCommand("set Verbose=true", outputHelper.getOutput());
         outputHelper.clear();
         tjConsole.executeCommand("get Verbose", outputHelper.getOutput());
-        Assert.assertEquals("Verbose = true", outputHelper.toString().trim());
+        assertEquals("Verbose = true", outputHelper.toString().trim());
     }
 
     @Test
@@ -72,18 +77,18 @@ public class TJConsoleE2ETest {
         tjConsole.executeCommand("use java.lang:type=Memory", outputHelper.getOutput());
         outputHelper.clear();
         tjConsole.executeCommand("invoke gc", outputHelper.getOutput());
-        Assert.assertEquals("Methodresult:(void)", outputHelper.toString().trim().replace(" ", ""));
+        assertEquals("Methodresult:(void)", outputHelper.toString().trim().replace(" ", ""));
     }
 
     @Test
     public void testCmdEnv() throws Exception {
         tjConsole.executeCommand("env", outputHelper.getOutput());
-        Assert.assertTrue(outputHelper.toString().contains("DATE_FORMAT"));
+        assertTrue(outputHelper.toString().contains("DATE_FORMAT"));
         tjConsole.executeCommand("env DATE_FORMAT=yyyy-MMM-dd", outputHelper.getOutput());
         outputHelper.clear();
         tjConsole.executeCommand("env", outputHelper.getOutput());
         System.out.println(outputHelper);
-        Assert.assertTrue(outputHelper.toString().contains("DATE_FORMAT = yyyy-MMM-dd"));
+        assertTrue(outputHelper.toString().contains("DATE_FORMAT = yyyy-MMM-dd"));
     }
 
     @Test
@@ -99,10 +104,10 @@ public class TJConsoleE2ETest {
             }
             psCount++;
             if (! processLinePattern.matcher(psLine).matches()) {
-                Assert.fail("Line '" + psLine + "' doesn't look like ps line!");
+                fail("Line '" + psLine + "' doesn't look like ps line!");
             }
         }
-        Assert.assertTrue("We don't have even one process on the list", psCount > 0);
+        assertTrue("We don't have even one process on the list", psCount > 0);
     }
 }
 
@@ -121,12 +126,5 @@ class TestOutputHelper {
         out.reset();
     }
 
-    public void matchesPattern(final String patternStr) {
-        Pattern pattern = Pattern.compile(patternStr);
-        String str = toString().trim();
-        if (! pattern.matcher(str).matches()) {
-            Assert.fail("Input '" + str + "' doesn't match regexp '" + patternStr + "'");
-        }
-    }
 }
 

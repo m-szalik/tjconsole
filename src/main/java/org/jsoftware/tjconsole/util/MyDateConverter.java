@@ -62,7 +62,7 @@ public class MyDateConverter implements Converter {
         try {
             return dateFormat.parse(value.toString());
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 
