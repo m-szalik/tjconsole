@@ -41,7 +41,7 @@ public class HelpCommandDefinition extends AbstractCommandDefinition {
 
     @Override
     public boolean matches(String input) {
-        return input.equalsIgnoreCase(prefix) || input.equals("?");
+        return input.equalsIgnoreCase(prefix) || "?".equals(input);
     }
 
 
