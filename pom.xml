@@ -66,7 +66,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.0.0</version>
                 <configuration>
                     <finalName>../tjconsole-${project.version}</finalName>
                     <descriptors>
@@ -82,7 +82,7 @@
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>assembly</goal>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
